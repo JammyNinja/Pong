@@ -14,10 +14,10 @@ public class pongGUI extends JPanel
 	Player p1,p2;
 
 	int windowWidth;	//1000, player 1/100 of this, ball 1/50
-	int widthCell; 		//100 blocks of width, also half the ball size - for now my target ball granularity
+	int widthUnit; 		//100 blocks of width, also half the ball size - for now my target ball granularity
 	
 	int windowHeight;	//600, player is 1/6 of this
-	int heightCell; 	//50 blocks of height, one fifth of the player height //- so that the player can be split into 5
+	int heightUnit; 	//50 blocks of height, one fifth of the player height //- so that the player can be split into 5
 	
 	int playerHeight;
 	int playerWidth;
@@ -38,8 +38,8 @@ public class pongGUI extends JPanel
 		this.windowWidth 	= width;
 		this.windowHeight 	= height;
 
-		this.widthCell 		= windowWidth 	/ 100;
-		this.heightCell 	= windowHeight 	/ 50;
+		this.widthUnit 		= windowWidth 	/ 100;
+		this.heightUnit 	= windowHeight 	/ 50;
 
 		this.playerHeight	= windowHeight	/ 6;
 		this.playerRadius 	= playerHeight	/ 2;
@@ -70,6 +70,7 @@ public class pongGUI extends JPanel
 	}
 
 	public void keyPressed(KeyEvent e){
+		//this is all the gui should be doing, this is where it passes onto game methinks
 		switch(e.getKeyCode()){
 			case KeyEvent.VK_W:
 				p1.moveUp();
@@ -103,7 +104,7 @@ public class pongGUI extends JPanel
 
 	public void keyTyped(KeyEvent e){
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 		ball.moveBall();
 		//check if hit player
@@ -148,10 +149,10 @@ public class pongGUI extends JPanel
 
 	public void paintPlayers(Graphics g){
 		//player 1
-		g.fillRect(p1x, p1.yPos - playerRadius, playerWidth, playerHeight);
+		g.fillRect(p1.xPos, p1.yPos - playerRadius, playerWidth, playerHeight);
 
 		//player 2
-		g.fillRect(p2x, p2.yPos - playerRadius, playerWidth, playerHeight);
+		g.fillRect(p2.xPos, p2.yPos - playerRadius, playerWidth, playerHeight);
 	}
 
 	//calls ball.hitPlayer(x) where -1 means it hit top third, 0 centre third and 1 bottom third of player
@@ -159,7 +160,7 @@ public class pongGUI extends JPanel
 		
 		//coming at player on left, p1
 		if(ball.dx < 0){
-			if(ball.xPos <= p1.xPos && ball.xPos >= p1.xPos-widthCell){
+			if(ball.xPos <= p1.xPos && ball.xPos >= p1.xPos-widthUnit){
 				if(ball.yPos + ball.diameter > p1.yPos - playerRadius && ball.yPos < p1.yPos + playerRadius){
 					//definitely hit the player now decide where
 					//top quarter
@@ -174,7 +175,7 @@ public class pongGUI extends JPanel
 
 		//coming at player on right, p2
 		if(ball.dx > 0){
-			if(ball.xPos + ball.diameter >= p2.xPos && ball.xPos+ball.diameter <= p2.xPos+widthCell){
+			if(ball.xPos + ball.diameter >= p2.xPos && ball.xPos+ball.diameter <= p2.xPos+widthUnit){
 				if(ball.yPos + ball.diameter > p2.yPos - playerRadius && ball.yPos < p2.yPos + playerRadius){
 					//definitely hit the player now decide where
 					//top quarter
@@ -191,11 +192,11 @@ public class pongGUI extends JPanel
 	//checks if ball out of x bounds, and calls resetPoint accordingly
 	public void checkPointOver(){
 		//ball out of bounds p1 score
-		if(ball.xPos > windowWidth - widthCell){
+		if(ball.xPos > windowWidth - widthUnit){
 			resetPoint(1);
 
 		} //p2 scored
-		else if (ball.xPos < widthCell){
+		else if (ball.xPos < widthUnit){
 			resetPoint(2);
 		}
 	}

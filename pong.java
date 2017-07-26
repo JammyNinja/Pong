@@ -11,7 +11,7 @@ public class pong {
 		make players stop at edge
 	*/
 	public static void main(String[] args){
-		System.out.println("pong");
+		System.out.println("pong, on git");
 		Frame f = new Frame();
 		
 		/*

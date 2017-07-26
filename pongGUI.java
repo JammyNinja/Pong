@@ -62,10 +62,10 @@ public class pongGUI extends JPanel
 		//some visual constants
 		setOpaque(true);
 		setBackground(Color.BLACK);
-
+		
 		//START THE GAME FROM HERE FOR NOW
 		//set things in motion, the timer counts as an actionPerformed
-		game.setGUIandStartGame(this, game);
+		game.setGUIandSetupGame(this);
 
 		game.print("GUI constructed");
 	}
@@ -94,7 +94,7 @@ public class pongGUI extends JPanel
 			break;
 
 			case KeyEvent.VK_SPACE:
-				//startGame(this);
+				//if(!game.gameStarted) game.startGame();
 				game.print("PAUSE!");
 			break;
 		}
@@ -107,9 +107,11 @@ public class pongGUI extends JPanel
 	}
 
 	public void paint(Graphics g){
-		paintNet(g);
-		paintBall(g);
-		paintPlayers(g);
+		if(game.gameStarted) {
+			paintNet(g);
+			paintBall(g);
+			paintPlayers(g);
+		}
 	}
 
 	//redo this better later

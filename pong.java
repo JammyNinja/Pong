@@ -6,6 +6,7 @@ public class pong implements ActionListener{
 current:
 		
 		TIMING
+		start with button press
 		pause with space bar
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
 		maybe even only let point start when starting player moves
@@ -28,21 +29,24 @@ current:
 	static Ball ball;
 	static pongGUI gui;
 	static Timer t;
-	//pong gameInstance;
+	static pong gameInstance;
+	static boolean gameStarted = false;
 	
 	public static void main(String[] args){
 		System.out.println("pong, on git");
 		pong game = new pong();
+		//gameInstance = game;
+		t = new Timer(50, game);
 		startGUI(game);
 	}
 
-	public static void startGUI(pong game){
-		Frame f = new Frame(game);
+	public static void startGUI(pong p){
+		Frame f = new Frame(p);
 	}
 
-	public static void startGame(pong game){
-		//game is the actionlistener
-		t = new Timer(50, game);
+	public static void startGame(){
+		//gameInstance is the actionlistener
+		gameStarted = true;
 		t.start();
 		print("game started");
 	}
@@ -53,10 +57,10 @@ current:
 		ball = new Ball(gui);
 	}
 
-	public static void setGUIandStartGame(pongGUI ggui, pong game){
+	public static void setGUIandSetupGame(pongGUI ggui){
 		gui = ggui;
 		setupGame();
-		startGame(game);
+		startGame();
 	}
 	
 	//called per timestep

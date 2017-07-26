@@ -1,5 +1,7 @@
-import java.awt.event.KeyListener;
-public class pong {
+import javax.swing.*; // timer
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+public class pong implements ActionListener{
 	/* TODO
 current:		work out which functions can/should go into pong class as opposed to gui
 		pause with space bar
@@ -12,20 +14,122 @@ current:		work out which functions can/should go into pong class as opposed to g
 
 		point scoring
 		point displaying
+
+		sort the net function out, that shit is shameful
 	*/
-	Player p1,p2;
-	Ball ball;
+	static Player p1,p2;
+	static Ball ball;
+	static pongGUI gui;
+	static Timer t;
 	
 	public static void main(String[] args){
 		System.out.println("pong, on git");
-		Frame f = new Frame();
+		pong game = new pong();
+		startGUI(game);
+	}
+
+	public static void startGUI(pong game){
+		Frame f = new Frame(game);
+	}
+
+	public static void startGame(pong game){
+		print("game started");
+		p1 = new Player(1, gui);
+		p2 = new Player(2, gui);
+		ball = new Ball(gui);
+
+		//game is the actionlistener
+		t = new Timer(50, game);
+		t.start();
+	}
+	
+	public static void setGUIandStartGame(pongGUI ggui, pong game){
+		gui = ggui;
+		startGame(game);
+	}
+	
+	//called per timestep
+	public void actionPerformed(ActionEvent e) {
+		ball.moveBall();
 		
+		//check if hit player
+		checkBallPlayer();
+		//is point over
+		checkPointOver();
+		
+		gui.repaint(); //somehow this gives the background
+	}
+
+	//calls ball.hitPlayer(x) where -1 means it hit top third, 0 centre third and 1 bottom third of player
+	public void checkBallPlayer(){
+		
+		//coming at player on left, p1
+		if(ball.dx < 0){
+			if(ball.xPos <= p1.xPos && ball.xPos >= p1.xPos-gui.widthUnit){
+				if(ball.yPos + ball.diameter > p1.yPos - gui.playerRadius && ball.yPos < p1.yPos + gui.playerRadius){
+					//definitely hit the player now decide where
+					//top quarter
+					if(ball.yPos + ball.diameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					//bottom quarter
+					else if(ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
+					//centre half
+					else ball.hitPlayer(0);
+				}
+			}
+		}
+
+		//coming at player on right, p2
+		if(ball.dx > 0){
+			if(ball.xPos + ball.diameter >= p2.xPos && ball.xPos+ball.diameter <= p2.xPos+gui.widthUnit){
+				if(ball.yPos + ball.diameter > p2.yPos - gui.playerRadius && ball.yPos < p2.yPos + gui.playerRadius){
+					//definitely hit the player now decide where
+					//top quarter
+					if(ball.yPos + ball.diameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					//bottom quarter
+					else if(ball.yPos >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
+					//centre half
+					else ball.hitPlayer(0);
+				}
+			}
+		}
+	}
+
+	//checks if ball out of x bounds, and calls resetPoint accordingly
+	public void checkPointOver(){
+		//ball out of bounds p1 score
+		if(ball.xPos > gui.windowWidth - gui.widthUnit){
+			resetPoint(1);
+
+		} //p2 scored
+		else if (ball.xPos < gui.widthUnit){
+			resetPoint(2);
+		}
+	}
+
+	public void quitGame(){
+		int winner =  p1.points > p2.points ? 1 : 2;
+		if(p1.points == p2.points) winner = 0;
+		
+		print("game over with score: " + p1.points + "-" + p2.points + ". " + 
+			(winner == 0 ? "draw." : "Player " + winner + " won!"));
+		//die
+		System.exit(0);
+	}
+
+	//calls reset functions for ball and players, increments player score
+	public void resetPoint(int winner){
+		ball.reset();
+		p1.reset(); p2.reset();
+		if(winner == 1) p1.points ++;
+		else if (winner == 2) p2.points++;
+		else print("who won that point?!");
+
+		print("RESET POINT after player " + winner + " scored");
 	}
 
 	static public void print(String s){
 		System.out.println(s);
 	}
-
 }
 
 //there will be two instances of this class
@@ -41,17 +145,19 @@ class Player {
 
 	public Player(int pNum, pongGUI gui){
 		this.playerNumber = pNum;
-		this.yPos = gui.windowYCentre;
 		this.points = 0;
+		this.yPos = gui.windowYCentre;
 		this.dy = gui.heightUnit;
-		this.northBound = 0;
 		this.southBound = gui.windowHeight;// - gui.playerRadius;
+		this.northBound = 0;
 
 		this.gui = gui;
 
 		if(pNum == 1) this.xPos = gui.p1x;
 		else if (pNum == 2) this.xPos = gui.p2x;
 		else pong.print("totally an error with player number and depth in player constructor");
+	
+		pong.print("Player " + pNum + " initialised.");
 	}
 
 	public void moveUp(){
@@ -94,6 +200,8 @@ class Ball {
 		this.yPos = gui.windowYCentre;
 		this.diameter = gui.windowWidth / 50;
 		this.gui = gui;
+
+		pong.print("Ball initialised");
 	}
 
 	//called per timestep

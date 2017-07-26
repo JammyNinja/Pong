@@ -32,8 +32,9 @@ public class pongGUI extends JPanel
 	int windowXCentre;
 	int windowYCentre;
 
-
+	//constuctor initialises everything and calls timer
 	public pongGUI(int width, int height){
+		//initalise gui values, based on the frame size
 		this.windowWidth 	= width;
 		this.windowHeight 	= height;
 
@@ -52,14 +53,19 @@ public class pongGUI extends JPanel
 		this.p1x = playerDepth;
 		this.p2x = windowWidth - playerDepth;
 
+		//listen to the keys hit while focus is on this jframe
 		addKeyListener(this);
 		setFocusable(true);
+		//some visual constants
 		setOpaque(true);
 		setBackground(Color.BLACK);
 
+		//moveable object class constructors
 		ball = new Ball(this);//give it the gui
 		p1 = new Player(1, this);
 		p2 = new Player(2, this);
+
+		//set things in motion, the timer counts as an actionPerformed
 		t.start();
 	}
 
@@ -82,12 +88,7 @@ public class pongGUI extends JPanel
 			break;
 
 			case KeyEvent.VK_ESCAPE:
-				int winner =  p1.points > p2.points ? 1 : 2;
-				if(p1.points == p2.points) winner = 0;
-				
-				pong.print("game over with score: " + p1.points + "-" + p2.points + ". " + 
-					(winner == 0 ? "draw." : "Player " + winner + "won!"));
-				
+				quitGame();
 				System.exit(0);
 			break;
 
@@ -96,10 +97,13 @@ public class pongGUI extends JPanel
 			break;
 		}
 	}
+
 	public void keyReleased(KeyEvent e){		
 	}
+
 	public void keyTyped(KeyEvent e){
 	}
+	
 	public void actionPerformed(ActionEvent e) {
 		ball.moveBall();
 		//check if hit player
@@ -111,6 +115,14 @@ public class pongGUI extends JPanel
 		paintNet(g);
 		paintBall(g);
 		paintPlayers(g);
+	}
+
+	public void quitGame(){
+		int winner =  p1.points > p2.points ? 1 : 2;
+		if(p1.points == p2.points) winner = 0;
+		
+		pong.print("game over with score: " + p1.points + "-" + p2.points + ". " + 
+			(winner == 0 ? "draw." : "Player " + winner + " won!"));
 	}
 
 	//redo this better later
@@ -141,6 +153,7 @@ public class pongGUI extends JPanel
 		//player 2
 		g.fillRect(p2x, p2.yPos - playerRadius, playerWidth, playerHeight);
 	}
+
 	//calls ball.hitPlayer(x) where -1 means it hit top third, 0 centre third and 1 bottom third of player
 	public void checkBallPlayer(){
 		
@@ -186,6 +199,7 @@ public class pongGUI extends JPanel
 			resetPoint(2);
 		}
 	}
+
 	//calls reset functions for ball and players, increments player score
 	public void resetPoint(int winner){
 		ball.reset();

@@ -13,8 +13,7 @@ current: pong instance as class variable - gameInstance -> game plz
 		
 		GUI
 		make players stop at edge
-		point displaying
-		dont like how it starts with Frame
+		point displaying with Jlabels as its not symmetrical :/
 
 		GAME
 		player names
@@ -25,6 +24,11 @@ current: pong instance as class variable - gameInstance -> game plz
 		sort the net function out, that shit is shameful
 		should the moving parts be taking gui into their constructors?
 		- sort the statics
+		dont like how it starts with Frame
+
+		FUTURE FEATURES
+		p2 AI
+		playable on a webpage
 	*/
 
 	static Player p1,p2;

@@ -10,8 +10,8 @@ public class pongGUI extends JPanel
 						implements KeyListener//, ActionListener
 {
 	//Timer t = new Timer(50,this);
-	Ball ball;
-	Player p1,p2;
+	//Ball ball;
+	//Player p1,p2;
 
 	int windowWidth;	//1000, player 1/100 of this, ball 1/50
 	int widthUnit; 		//100 blocks of width, also half the ball size - for now my target ball granularity
@@ -34,7 +34,7 @@ public class pongGUI extends JPanel
 
 	pong game;
 
-	//constuctor initialises everything and calls timer
+	//constuctor initialises everything and tells game that it did so
 	public pongGUI(int width, int height, pong game){
 		//initalise gui values, based on the frame size
 		this.windowWidth 	= width;
@@ -108,11 +108,12 @@ public class pongGUI extends JPanel
 
 	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
-		//if(game.gameStarted) {
 			paintNet(g);
 			paintBall(g);
 			paintPlayers(g);
-		//}
+		if(game.gameStarted) {
+			paintScore(g);
+		}
 	}
 
 	//redo this better later
@@ -146,15 +147,20 @@ public class pongGUI extends JPanel
 		//player 2
 		g.fillRect(game.p2.xPos, game.p2.yPos - playerRadius, playerWidth, playerHeight);
 	}
+
+	public void paintScore(Graphics g){
+		int fontSize = 25;
+		int scoreGap = 10;
+		g.setFont(new Font("Comic Sans MS", Font.PLAIN, fontSize));
+		g.drawString("" + game.p1.points, windowXCentre - fontSize, 50);
+		g.drawString(""+ game.p2.points, windowXCentre + scoreGap, 50);
+	}
 }
 
 class Frame extends JFrame {
 	int frameWidth = 1000; //windowWidth = 1000; player 1/100 of this, ball 1/50
 	int frameHeight = 600; //windowHeight = 600;  //player is 1/6 of this
 	pong game;
-	//public static void main(String[] args){
-	//	Frame f = new Frame(); //=JFrame
-	//}
 
 	public Frame(pong p){
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

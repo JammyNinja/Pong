@@ -3,30 +3,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current: should the moving parts be taking gui into their constructors?
-
+current: 
 		TIMING
-		start with button press
+		start with button press - THE BALL SHOULD FREEZE - space to 'serve'
+		maybe even only let point start when starting player moves
 		pause with space bar
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
-		maybe even only let point start when starting player moves
 		
 		GUI
 		make players stop at edge
 		point displaying with Jlabels as its not symmetrical :/
-		^why does it lag at opening now?
+		^why does it lag at opening when painting score?
+		should I be painting objects from their centre? :/
 
 		GAME
 		player point score function?
-		point scoring
 		player names
 		players not moving fast enough/ hold buttons plz
+		ball xUnit
 
 		TIDYING
 		pong instance as class variable - gameInstance -> game plz
 		sort the net function out, that shit is shameful
 		- sort the statics
 		dont like how it starts with Frame
+		add northwall variable everywhere to allow for a possible banner
+		gui should decide and tell player and ball their size for collisions with walls
 
 		FUTURE FEATURES
 		p2 AI
@@ -221,26 +223,36 @@ class Ball {
 	int dy; //I propose a number from a set of 5, where 0 = straight, +2 = max south, -2 = max north
 	int dx; //how far the ball moves to the side with each timestep, positive = right, neg left
 
-	pongGUI gui;
-	int diameter;
+	static int diameter;
+	static int southWall, northWall;
+	static int resetX, resetY;
+	int yUnit; //xUnit?
 
 	public Ball(pongGUI gui){
-		this.dy = 0;//gui.heightUnit;
-		this.dx = gui.widthUnit;
-		this.xPos = gui.windowXCentre;
-		this.yPos = gui.windowYCentre;
+		//fixed bounds based on gui
+		this.southWall = gui.windowHeight;
+		this.northWall = 0;
+		this.resetX = gui.windowXCentre;
+		this.resetY = gui.windowYCentre;
 		this.diameter = gui.windowWidth / 50;
-		this.gui = gui;
+		this.yUnit = gui.heightUnit;
+		this.dx = gui.widthUnit;
 
+		//these ones change during game
+		this.dy = 0; //starts straight
+		this.xPos = resetX;
+		this.yPos = resetY;
+		
 		pong.print("Ball initialised");
 	}
 
 	//called per timestep
 	public void moveBall(){
 		xPos += dx;
-		//yPos += dy;
+		//seperate function to take into account walls
 		updateYPos();
 	}
+
 	//move the ball in the vertical space, including bounce on wall
 	private void updateYPos(){
 		yPos += dy;
@@ -250,31 +262,36 @@ class Ball {
 			dy *= -1;
 			yPos = 0;
 		}
-		else if (yPos + diameter >= gui.windowHeight) {
-			yPos = gui.windowHeight - diameter;
+		else if (yPos + diameter >= southWall) {
+			yPos = southWall - diameter;
 			dy *= -1;
 		}
 
 	}
+
 	//put the ball in the middle, send it towards the winner
 	public void reset(){
 		dx = -dx; //winner restarts
 		dy = 0;
-		xPos = gui.windowXCentre;
-		yPos = gui.windowYCentre;
+		xPos = resetX;
+		yPos = resetY;
 	}
 
 	//change angle (dy) depending on where it hit on the player (hitSpot)
 	//hitspot -1 top, 0 mid, 1 bottom
 	public void hitPlayer(int hitSpot){
-		dx = -dx;
 		//pong.print("hit spot: " + hitSpot + " dy " + dy);
+
+		//bounce horizontal
+		dx = -dx;
+
+		//bounce vertical:
 
 		//coming straight
 		if(dy == 0){
 			if(hitSpot == 0) {dy = 0;}
-			else if (hitSpot > 0) {dy = gui.heightUnit;}
-			else if (hitSpot < 0) {dy = -gui.heightUnit;}
+			else if (hitSpot > 0) {dy = yUnit;}
+			else if (hitSpot < 0) {dy = -yUnit;}
 			else pong.print ("somethings up with dy 0");
  		}
 
@@ -292,7 +309,8 @@ class Ball {
  			else if (hitSpot > 0) {dy *= -1;}
  			else dy=dy;
  		}
- 		else pong.print("wtf");
+
+ 		else pong.print("wtf player hit");
  		//pong.print(" newDy: " + dy);
 	}
 }

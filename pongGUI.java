@@ -31,16 +31,20 @@ public class pongGUI extends JPanel
 	pong game;
 
 	//constuctor initialises everything and tells game that it did so
+	//pass it frame for insets
 	public pongGUI(int width, int height, pong game){
+		//pong.print("gui found inset: " + f.getInsets().top);
+
 		//initalise gui values, based on the frame size
 		this.windowWidth 	= width;
 		this.windowHeight 	= height;
-
+		//units to gridify things
 		this.widthUnit 		= windowWidth 	/ 100;
-		this.heightUnit 	= windowHeight 	/ 50;
+		this.heightUnit 	= windowHeight 	/ 30; //=20
 
-		this.playerHeight	= windowHeight	/ 6;
+		this.playerHeight	= heightUnit 	* 6 ; //windowHeight	/ 6;
 		this.playerRadius 	= playerHeight	/ 2;
+
 		this.playerSixth	= playerHeight 	/ 6;
 		this.playerWidth	= windowWidth	/ 100;
 		this.playerDepth	= windowWidth 	/ 20;
@@ -106,6 +110,8 @@ public class pongGUI extends JPanel
 			paintNet(g);
 			paintBall(g);
 			paintPlayers(g);
+
+			g.drawLine(0,windowHeight-25,windowWidth,windowHeight-25);
 		/*if(game.gameStarted) {
 			paintScore(g);
 		}*/
@@ -158,10 +164,10 @@ class Frame extends JFrame {
 
 	public Frame(pong p){
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//this size includes border!
 		setSize(frameWidth,frameHeight);
 		setTitle("PONG");
 		setResizable(false);
-
 		initialise(p);
 	}
 
@@ -173,6 +179,7 @@ class Frame extends JFrame {
 
 		setLocationRelativeTo(null);
 		setVisible(true);
+		pong.print("frame insets now known as " + getInsets());
 	}
 }
 

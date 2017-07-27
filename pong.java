@@ -3,7 +3,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current: 
+current:	dont like how it starts with Frame
+			^make players stop at edge
+		
 		TIMING
 		start with button press - THE BALL SHOULD FREEZE - space to 'serve'
 		maybe even only let point start when starting player moves
@@ -11,7 +13,6 @@ current:
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
 		
 		GUI
-		make players stop at edge
 		point displaying with Jlabels as its not symmetrical :/
 		^why does it lag at opening when painting score?
 		should I be painting objects from their centre? :/
@@ -26,7 +27,6 @@ current:
 		pong instance as class variable - gameInstance -> game plz
 		sort the net function out, that shit is shameful
 		- sort the statics
-		dont like how it starts with Frame
 		add northwall variable everywhere to allow for a possible banner
 		gui should decide and tell player and ball their size for collisions with walls
 
@@ -168,7 +168,7 @@ class Player {
 
 	//position variables
 	int xPos; 			//used for collision detection with ball
-	int yPos;
+	int yPos;			//y co-ord of the player centre
 
 	//movement variables
 	int dy; 			//effectively the sensitivity
@@ -179,8 +179,9 @@ class Player {
 		this.points = 0;
 		
 		//gui info necessary for player movement restriction/reset
-		this.southBound = gui.windowHeight;// - gui.playerRadius;
-		this.northBound = 0;
+		this.southBound = gui.windowHeight - gui.playerRadius;
+		pong.print("southBound: " + southBound);
+		this.northBound = 0 + gui.playerRadius;
 		this.centre = gui.windowYCentre;
 		this.dy = gui.heightUnit;
 		this.yPos = centre;
@@ -196,16 +197,19 @@ class Player {
 	public void moveUp(){
 		//if not already at upper wall
 		if (yPos > northBound) {
-			if(yPos-dy <= northBound) yPos = northBound;
+			if(yPos-dy < northBound) yPos = northBound;
 			else yPos-= dy;
 		}
 	}
 
 	public void moveDown(){
+		pong.print("player y before move: " + yPos);
 		if (yPos < southBound) {
-			if(yPos + dy >= southBound) yPos = southBound;
+			if(yPos + dy > southBound) yPos = southBound;
 			else yPos += dy;
 		}
+		pong.print("player y after move: " + yPos);
+
 	}
 
 	public void reset() {

@@ -9,10 +9,6 @@ import java.awt.event.ActionListener;
 public class pongGUI extends JPanel
 						implements KeyListener//, ActionListener
 {
-	//Timer t = new Timer(50,this);
-	//Ball ball;
-	//Player p1,p2;
-
 	int windowWidth;	//1000, player 1/100 of this, ball 1/50
 	int widthUnit; 		//100 blocks of width, also half the ball size - for now my target ball granularity
 	
@@ -63,8 +59,7 @@ public class pongGUI extends JPanel
 		setOpaque(true);
 		setBackground(Color.BLACK);
 
-		//START THE GAME FROM HERE FOR NOW
-		//set things in motion, the timer counts as an actionPerformed
+		//FOR NOW STARTING THE GAME FROM HERE 
 		game.setGUIandSetupGame(this);
 
 		game.print("GUI constructed");
@@ -111,9 +106,9 @@ public class pongGUI extends JPanel
 			paintNet(g);
 			paintBall(g);
 			paintPlayers(g);
-		if(game.gameStarted) {
+		/*if(game.gameStarted) {
 			paintScore(g);
-		}
+		}*/
 	}
 
 	//redo this better later
@@ -160,18 +155,17 @@ public class pongGUI extends JPanel
 class Frame extends JFrame {
 	int frameWidth = 1000; //windowWidth = 1000; player 1/100 of this, ball 1/50
 	int frameHeight = 600; //windowHeight = 600;  //player is 1/6 of this
-	pong game;
 
 	public Frame(pong p){
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(frameWidth,frameHeight);
 		setTitle("PONG");
 		setResizable(false);
-		this.game = p;
-		initialise();
+
+		initialise(p);
 	}
 
-	public void initialise()
+	public void initialise(pong game)
 	{
 		setLayout(new GridLayout(1,1));
 		pongGUI gui = new pongGUI(frameWidth, frameHeight, game); //screen is a JPanel

@@ -3,7 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current: pong instance as class variable - gameInstance -> game plz
+current: should the moving parts be taking gui into their constructors?
 
 		TIMING
 		start with button press
@@ -14,15 +14,17 @@ current: pong instance as class variable - gameInstance -> game plz
 		GUI
 		make players stop at edge
 		point displaying with Jlabels as its not symmetrical :/
+		^why does it lag at opening now?
 
 		GAME
-		player names
 		player point score function?
 		point scoring
+		player names
+		players not moving fast enough/ hold buttons plz
 
 		TIDYING
+		pong instance as class variable - gameInstance -> game plz
 		sort the net function out, that shit is shameful
-		should the moving parts be taking gui into their constructors?
 		- sort the statics
 		dont like how it starts with Frame
 
@@ -158,25 +160,30 @@ current: pong instance as class variable - gameInstance -> game plz
 
 //there will be two instances of this class
 class Player {
-	int yPos;
-	int xPos; 			//used for collision detection with ball
-
+	//player attributes
 	int playerNumber;
+	int points;
+
+	//position variables
+	int xPos; 			//used for collision detection with ball
+	int yPos;
+
+	//movement variables
 	int dy; 			//effectively the sensitivity
-	int points; 		//score
-	pongGUI gui;
-	int northBound,southBound;
+	static int northBound,southBound, centre; //static as same for all players
 
 	public Player(int pNum, pongGUI gui){
 		this.playerNumber = pNum;
 		this.points = 0;
-		this.yPos = gui.windowYCentre;
-		this.dy = gui.heightUnit;
+		
+		//gui info necessary for player movement restriction/reset
 		this.southBound = gui.windowHeight;// - gui.playerRadius;
 		this.northBound = 0;
+		this.centre = gui.windowYCentre;
+		this.dy = gui.heightUnit;
+		this.yPos = centre;
 
-		this.gui = gui;
-
+		//assign player depth calculated by gui
 		if(pNum == 1) this.xPos = gui.p1x;
 		else if (pNum == 2) this.xPos = gui.p2x;
 		else pong.print("totally an error with player number and depth in player constructor");
@@ -200,7 +207,7 @@ class Player {
 	}
 
 	public void reset() {
-		this.yPos = gui.windowYCentre;
+		this.yPos = centre;
 	}
 }
 

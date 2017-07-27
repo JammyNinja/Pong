@@ -3,25 +3,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current:
-		
+current: pong instance as class variable - gameInstance -> game plz
+
 		TIMING
 		start with button press
 		pause with space bar
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
 		maybe even only let point start when starting player moves
 		
-		PLAYERS/POINTS
+		GUI
 		make players stop at edge
+		point displaying
+		dont like how it starts with Frame
+
+		GAME
 		player names
 		player point score function?
 		point scoring
-		point displaying
 
 		TIDYING
 		sort the net function out, that shit is shameful
 		should the moving parts be taking gui into their constructors?
-		maybe a static pong instance? - think pong class variable to set then only refer to when starting game
 		- sort the statics
 	*/
 
@@ -37,6 +39,7 @@ current:
 		pong game = new pong();
 		//gameInstance = game;
 		t = new Timer(50, game);
+		//gui needs game for players
 		startGUI(game);
 	}
 
@@ -44,6 +47,7 @@ current:
 		Frame f = new Frame(p);
 	}
 
+	//starts timer and changes the game state
 	public static void startGame(){
 		//gameInstance is the actionlistener
 		gameStarted = true;
@@ -55,6 +59,7 @@ current:
 		p1 = new Player(1, gui);
 		p2 = new Player(2, gui);
 		ball = new Ball(gui);
+		//why isn't the background engaged at this point!?
 	}
 
 	public static void setGUIandSetupGame(pongGUI ggui){

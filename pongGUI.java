@@ -62,7 +62,7 @@ public class pongGUI extends JPanel
 		//some visual constants
 		setOpaque(true);
 		setBackground(Color.BLACK);
-		
+
 		//START THE GAME FROM HERE FOR NOW
 		//set things in motion, the timer counts as an actionPerformed
 		game.setGUIandSetupGame(this);
@@ -95,7 +95,7 @@ public class pongGUI extends JPanel
 
 			case KeyEvent.VK_SPACE:
 				//if(!game.gameStarted) game.startGame();
-				game.print("PAUSE!");
+				game.print("SPACE!");
 			break;
 		}
 	}
@@ -106,15 +106,18 @@ public class pongGUI extends JPanel
 	public void keyTyped(KeyEvent e){
 	}
 
+	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
-		if(game.gameStarted) {
+		//if(game.gameStarted) {
 			paintNet(g);
 			paintBall(g);
 			paintPlayers(g);
-		}
+		//}
 	}
 
 	//redo this better later
+	//black and white should be set to call from a global foreground/background colour
+	//netGaps should not be fixed...
 	public void paintNet(Graphics g){
 		g.setColor(Color.WHITE);
 				

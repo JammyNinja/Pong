@@ -101,7 +101,7 @@ public class pongGUI extends JPanel
 
 			case KeyEvent.VK_SPACE:
 				game.print("SPACE!");
-				if(!game.gameStarted) game.startGame();
+				game.startPoint(1);
 			break;
 		}
 	}

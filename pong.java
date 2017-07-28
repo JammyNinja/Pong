@@ -3,15 +3,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current:	stopped starting with frame in game but now escape broken?!
-	- oh and the game now starts with space...
-dont like how it starts with Frame
-			^make players stop at edge
+current:	make players stop at edge
+sub:		add northwall variable everywhere to allow for a possible banner
 		
 		TIMING
-		start with button press - THE BALL SHOULD FREEZE - space to 'serve'
-		maybe even only let point start when starting player moves
 		pause with space bar
+		serve again with space - or by moving I see
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
 		
 		GUI
@@ -23,13 +20,10 @@ dont like how it starts with Frame
 		player point score function?
 		player names
 		players not moving fast enough/ hold buttons plz
-		ball xUnit
 
 		TIDYING
-		pong instance as class variable - gameInstance -> game plz
 		sort the net function out, that shit is shameful
 		- sort the statics
-		add northwall variable everywhere to allow for a possible banner
 		gui should decide and tell player and ball their size for collisions with walls
 
 		FUTURE FEATURES
@@ -41,18 +35,18 @@ dont like how it starts with Frame
 	static Ball ball;
 	static pongGUI gui;
 	static Timer t;
-	static pong gameInstance;
+	static pong game;
 	static boolean gameStarted = false;
 	
 	public static void main(String[] args){
 		System.out.println("pong, on git");
-		pong game = new pong();
+		game = new pong();
 		//gameInstance = game;
 		gui = new pongGUI(game);
 
 		//move timer into setup game, gameinstance to be solved at the same time
-		t = new Timer(50, game);
 		setupGame();
+		startGame();
 	}
 
 	//starts timer and changes the game state
@@ -67,6 +61,7 @@ dont like how it starts with Frame
 		p1 = new Player(1, gui);
 		p2 = new Player(2, gui);
 		ball = new Ball(gui);
+		t = new Timer(50, game);
 
 		print("game setup done, all moving parts initialised");
 		//why isn't the background engaged at this point!?
@@ -122,16 +117,33 @@ dont like how it starts with Frame
 	public void checkPointOver(){
 		//ball out of bounds p1 score
 		if(ball.xPos > gui.windowWidth - gui.widthUnit){
-			resetPoint(1);
+			endPoint(1);
 
 		} //p2 scored
 		else if (ball.xPos < gui.widthUnit){
-			resetPoint(2);
+			endPoint(2);
 		}
 	}
 
+	public void endPoint(int winner){
+		print("Point scored by player " + winner);
+		//points to the winner
+		if(winner == 1) p1.points ++;
+		else if (winner == 2) p2.points++;
+		else print("who won that point?!");
+		//stop the ball
+		ball.endPoint();
+		//auto starting point for now
+		startPoint(winner);
+	}
+	//consider letting the players be free
+	public void startPoint(int server){
+		p1.reset(); p2.reset();
+		ball.serve(server);
+	}
+
 	public void quitGame(){
-		print("QUITTING GAME");
+		print("Quitting game");
 		int winner =  p1.points > p2.points ? 1 : 2;
 		if(p1.points == p2.points) winner = 0;
 		
@@ -139,17 +151,6 @@ dont like how it starts with Frame
 			(winner == 0 ? "draw." : "Player " + winner + " won!"));
 		//die
 		System.exit(0);
-	}
-
-	//calls reset functions for ball and players, increments player score
-	public void resetPoint(int winner){
-		ball.reset();
-		p1.reset(); p2.reset();
-		if(winner == 1) p1.points ++;
-		else if (winner == 2) p2.points++;
-		else print("who won that point?!");
-
-		print("RESET POINT after player " + winner + " scored");
 	}
 
 	static public void print(String s){
@@ -200,12 +201,12 @@ class Player {
 	}
 
 	public void moveDown(){
-		pong.print("player y before move: " + yPos);
+		//pong.print("player y before move: " + yPos);
 		if (yPos < southBound) {
 			if(yPos + dy > southBound) yPos = southBound;
 			else yPos += dy;
 		}
-		pong.print("player y after move: " + yPos);
+		//pong.print("player y after move: " + yPos);
 
 	}
 
@@ -227,7 +228,7 @@ class Ball {
 	static int diameter;
 	static int southWall, northWall;
 	static int resetX, resetY;
-	int yUnit; //xUnit?
+	static int yUnit, xUnit;
 
 	public Ball(pongGUI gui){
 		//fixed bounds based on gui
@@ -237,7 +238,7 @@ class Ball {
 		this.resetY = gui.windowYCentre;
 		this.diameter = gui.windowWidth / 50;
 		this.yUnit = gui.heightUnit;
-		this.dx = gui.widthUnit;
+		this.xUnit = gui.widthUnit;
 
 		//these ones change during game
 		this.dy = 0; //starts straight
@@ -270,9 +271,13 @@ class Ball {
 
 	}
 
+	//set the ball in motion
+	public void serve(int server){
+		dx = server == 1 ? -xUnit : xUnit ; //winner should start
+	}
 	//put the ball in the middle, send it towards the winner
-	public void reset(){
-		dx = -dx; //winner restarts
+	public void endPoint(){
+		dx = 0; 
 		dy = 0;
 		xPos = resetX;
 		yPos = resetY;

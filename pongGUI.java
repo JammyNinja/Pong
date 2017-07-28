@@ -23,31 +23,42 @@ public class pongGUI extends JPanel
 	
 	int p1x,p2x;
 	int player2y;
+	int ballDiameter;
 	int ballX, ballY;
 		
 	int windowXCentre;
 	int windowYCentre;
 
 	pong game;
+	Frame f;
 
 	public pongGUI(pong game) {
-		pong.print("constructing gui");
+		pong.print("constructing gui...");
 
 		//needs game for passing keyboard actions to game
 		this.game = game;
-		Frame f = new Frame();
-		initGUI(f.frameWidth, f.frameHeight);
-		f.initialise(this);
-
-		pong.print("gui constructed");
-
+		f = new Frame();
+		initGUI(f);
+		
+		pong.print("gui constructed.");
 	}
 
-	public void initGUI(int width, int height){
-		pong.print("initialising gui");
+	public void initGUI(Frame f){
+		pong.print("initialising gui...");
+
+		//some visual constants
+		setOpaque(true);
+		setBackground(Color.BLACK);
+		//not just set size, works with pack and solved frame border problem!
+		setPreferredSize(new Dimension(f.frameWidth,f.frameHeight));
+		
+		//get wet for input
+		addKeyListener(this);
+		setFocusable(true);
+
 		//initalise gui values, based on the frame size
-		this.windowWidth 	= width;
-		this.windowHeight 	= height;
+		this.windowWidth 	= f.frameWidth;
+		this.windowHeight 	= f.frameHeight;
 		//units to gridify things
 		this.widthUnit 		= windowWidth 	/ 100;
 		this.heightUnit 	= windowHeight 	/ 30; //=20
@@ -62,17 +73,14 @@ public class pongGUI extends JPanel
 		this.windowXCentre	= windowWidth 	/ 2;
 		this.windowYCentre 	= windowHeight 	/ 2;
 
+		this.ballDiameter = windowWidth		/ 50;
 		this.p1x = playerDepth;
 		this.p2x = windowWidth - playerDepth;
 
-		//listen to the keys hit while focus is on this jframe
-		addKeyListener(this);
-		setFocusable(true);
-		//some visual constants
-		setOpaque(true);
-		setBackground(Color.BLACK);
+		
 
-		game.print("GUI initialised with initGUI");
+		f.initialise(this);
+		game.print("GUI initialised.");
 
 	}
 
@@ -95,7 +103,7 @@ public class pongGUI extends JPanel
 			break;
 
 			case KeyEvent.VK_ESCAPE:
-				game.print("ESCAPE");
+				game.print("ESCAPE!");
 				game.quitGame();
 			break;
 
@@ -106,46 +114,43 @@ public class pongGUI extends JPanel
 		}
 	}
 
-	public void keyReleased(KeyEvent e){		
-	}
-
-	public void keyTyped(KeyEvent e){
-	}
+	public void keyReleased(KeyEvent e){}
+	
+	public void keyTyped(KeyEvent e){}
 
 	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
+		g.setColor(Color.WHITE);
 		if(game.gameStarted) {
 			paintNet(g);
 			paintBall(g);
 			paintPlayers(g);
 
-			g.drawLine(0,windowHeight-25,windowWidth,windowHeight-25);
+			g.drawLine(0,windowHeight-1,windowWidth,windowHeight-1);
 			paintScore(g);
 		}
 	}
 
-	//redo this better later
 	//black and white should be set to call from a global foreground/background colour
-	//netGaps should not be fixed...
 	public void paintNet(Graphics g){
-		g.setColor(Color.WHITE);
 				
-		int netGaps = 25; boolean netFinished = false;
-		int brushHeight = 0;
-		int netLocation = windowWidth/2;
-		while(!netFinished){ //probably should have been a for loop... #hungover programming
-			g.drawLine(netLocation,brushHeight,netLocation,brushHeight+netGaps);
-			brushHeight += netGaps;
+		int netGaps = ballDiameter;
+		int netX = windowWidth/2;
+		
+		boolean flip = true;
+		//gui stops drawing players if <= in the stop condition, apprently you cant draw out of bounds...
+		for(int brushY =0; brushY< windowHeight; brushY+=netGaps){
+			g.drawLine(netX, brushY, netX, brushY+netGaps);
+			//switch colour
 			if(g.getColor() == Color.WHITE) g.setColor(Color.BLACK);
 			else g.setColor(Color.WHITE);
-
-			if(brushHeight >= windowHeight) netFinished = true;
 		}
+		g.setColor(Color.WHITE);
 	}
 
 	public void paintBall(Graphics g) {
 		
-		g.fillRect(game.ball.xPos, game.ball.yPos, game.ball.diameter, game.ball.diameter); //x,y,width,height 
+		g.fillRect(game.ball.xPos, game.ball.yPos, ballDiameter, ballDiameter); //x,y,width,height 
 	}
 
 	public void paintPlayers(Graphics g){
@@ -182,11 +187,11 @@ class Frame extends JFrame {
 	{
 		setLayout(new GridLayout(1,1));
 		add(guiPanel);
-
+		//pack();
 		setLocationRelativeTo(null);
-		setVisible(true);
-
+		pack();
 		pong.print("frame insets now known as " + getInsets());
+		setVisible(true);
 	}
 }
 

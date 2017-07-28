@@ -3,9 +3,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current:	make players stop at edge
-sub:		add northwall variable everywhere to allow for a possible banner
-		
+current:
+
 		TIMING
 		pause with space bar
 		serve again with space - or by moving I see
@@ -15,16 +14,16 @@ sub:		add northwall variable everywhere to allow for a possible banner
 		point displaying with Jlabels as its not symmetrical :/
 		^why does it lag at opening when painting score?
 		should I be painting objects from their centre? :/
+		forground and background colours variable - maybe even players and ball...
 
 		GAME
+		if you press space after auto serve sometimes it switches direction
 		player point score function?
 		player names
 		players not moving fast enough/ hold buttons plz
 
 		TIDYING
-		sort the net function out, that shit is shameful
 		- sort the statics
-		gui should decide and tell player and ball their size for collisions with walls
 
 		FUTURE FEATURES
 		p2 AI
@@ -138,7 +137,7 @@ sub:		add northwall variable everywhere to allow for a possible banner
 	}
 	//consider letting the players be free
 	public void startPoint(int server){
-		p1.reset(); p2.reset();
+		//p1.reset(); p2.reset();
 		ball.serve(server);
 	}
 
@@ -170,7 +169,7 @@ class Player {
 
 	//movement variables
 	int dy; 			//effectively the sensitivity
-	static int northBound,southBound, centre; //static as same for all players
+	static int northBound, southBound, centre; //static as same for all players
 
 	public Player(int pNum, pongGUI gui){
 		this.playerNumber = pNum;
@@ -178,7 +177,6 @@ class Player {
 		
 		//gui info necessary for player movement restriction/reset
 		this.southBound = gui.windowHeight - gui.playerRadius;
-		pong.print("southBound: " + southBound);
 		this.northBound = 0 + gui.playerRadius;
 		this.centre = gui.windowYCentre;
 		this.dy = gui.heightUnit;
@@ -193,7 +191,6 @@ class Player {
 	}
 
 	public void moveUp(){
-		//if not already at upper wall
 		if (yPos > northBound) {
 			if(yPos-dy < northBound) yPos = northBound;
 			else yPos-= dy;
@@ -201,13 +198,10 @@ class Player {
 	}
 
 	public void moveDown(){
-		//pong.print("player y before move: " + yPos);
 		if (yPos < southBound) {
 			if(yPos + dy > southBound) yPos = southBound;
 			else yPos += dy;
 		}
-		//pong.print("player y after move: " + yPos);
-
 	}
 
 	public void reset() {
@@ -232,11 +226,10 @@ class Ball {
 
 	public Ball(pongGUI gui){
 		//fixed bounds based on gui
-		this.southWall = gui.windowHeight;
-		this.northWall = 0;
+		this.southWall = gui.windowHeight - gui.ballDiameter;
+		this.northWall = 0 + gui.ballDiameter;
 		this.resetX = gui.windowXCentre;
 		this.resetY = gui.windowYCentre;
-		this.diameter = gui.windowWidth / 50;
 		this.yUnit = gui.heightUnit;
 		this.xUnit = gui.widthUnit;
 
@@ -260,12 +253,12 @@ class Ball {
 		yPos += dy;
 
 		//check if ball overlaps with wall (if y is out of bounds) if so, hit wall => change angle
-		if(yPos <= 0 ){
+		if(yPos <= northWall ){
+			yPos = northWall;
 			dy *= -1;
-			yPos = 0;
 		}
-		else if (yPos + diameter >= southWall) {
-			yPos = southWall - diameter;
+		else if (yPos>= southWall) {
+			yPos = southWall;
 			dy *= -1;
 		}
 

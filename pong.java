@@ -3,7 +3,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current:	dont like how it starts with Frame
+current:	stopped starting with frame in game but now escape broken?!
+	- oh and the game now starts with space...
+dont like how it starts with Frame
 			^make players stop at edge
 		
 		TIMING
@@ -46,13 +48,11 @@ current:	dont like how it starts with Frame
 		System.out.println("pong, on git");
 		pong game = new pong();
 		//gameInstance = game;
-		t = new Timer(50, game);
-		//gui needs game for players
-		startGUI(game);
-	}
+		gui = new pongGUI(game);
 
-	public static void startGUI(pong p){
-		Frame f = new Frame(p);
+		//move timer into setup game, gameinstance to be solved at the same time
+		t = new Timer(50, game);
+		setupGame();
 	}
 
 	//starts timer and changes the game state
@@ -67,13 +67,9 @@ current:	dont like how it starts with Frame
 		p1 = new Player(1, gui);
 		p2 = new Player(2, gui);
 		ball = new Ball(gui);
-		//why isn't the background engaged at this point!?
-	}
 
-	public static void setGUIandSetupGame(pongGUI ggui){
-		gui = ggui;
-		setupGame();
-		startGame();
+		print("game setup done, all moving parts initialised");
+		//why isn't the background engaged at this point!?
 	}
 	
 	//called per timestep
@@ -135,6 +131,7 @@ current:	dont like how it starts with Frame
 	}
 
 	public void quitGame(){
+		print("QUITTING GAME");
 		int winner =  p1.points > p2.points ? 1 : 2;
 		if(p1.points == p2.points) winner = 0;
 		

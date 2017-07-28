@@ -30,11 +30,21 @@ public class pongGUI extends JPanel
 
 	pong game;
 
-	//constuctor initialises everything and tells game that it did so
-	//pass it frame for insets
-	public pongGUI(int width, int height, pong game){
-		//pong.print("gui found inset: " + f.getInsets().top);
+	public pongGUI(pong game) {
+		pong.print("constructing gui");
 
+		//needs game for passing keyboard actions to game
+		this.game = game;
+		Frame f = new Frame();
+		initGUI(f.frameWidth, f.frameHeight);
+		f.initialise(this);
+
+		pong.print("gui constructed");
+
+	}
+
+	public void initGUI(int width, int height){
+		pong.print("initialising gui");
 		//initalise gui values, based on the frame size
 		this.windowWidth 	= width;
 		this.windowHeight 	= height;
@@ -54,7 +64,6 @@ public class pongGUI extends JPanel
 
 		this.p1x = playerDepth;
 		this.p2x = windowWidth - playerDepth;
-		this.game = game;
 
 		//listen to the keys hit while focus is on this jframe
 		addKeyListener(this);
@@ -63,12 +72,9 @@ public class pongGUI extends JPanel
 		setOpaque(true);
 		setBackground(Color.BLACK);
 
-		//FOR NOW STARTING THE GAME FROM HERE 
-		game.setGUIandSetupGame(this);
+		game.print("GUI initialised with initGUI");
 
-		game.print("GUI constructed");
 	}
-
 
 	public void keyPressed(KeyEvent e){
 		switch(e.getKeyCode()){
@@ -89,12 +95,13 @@ public class pongGUI extends JPanel
 			break;
 
 			case KeyEvent.VK_ESCAPE:
+				game.print("ESCAPE");
 				game.quitGame();
 			break;
 
 			case KeyEvent.VK_SPACE:
-				//if(!game.gameStarted) game.startGame();
 				game.print("SPACE!");
+				if(!game.gameStarted) game.startGame();
 			break;
 		}
 	}
@@ -107,14 +114,14 @@ public class pongGUI extends JPanel
 
 	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
+		if(game.gameStarted) {
 			paintNet(g);
 			paintBall(g);
 			paintPlayers(g);
 
 			g.drawLine(0,windowHeight-25,windowWidth,windowHeight-25);
-		/*if(game.gameStarted) {
 			paintScore(g);
-		}*/
+		}
 	}
 
 	//redo this better later
@@ -159,26 +166,26 @@ public class pongGUI extends JPanel
 }
 
 class Frame extends JFrame {
-	int frameWidth = 1000; //windowWidth = 1000; player 1/100 of this, ball 1/50
-	int frameHeight = 600; //windowHeight = 600;  //player is 1/6 of this
+	static int frameWidth = 1000; //windowWidth = 1000; player 1/100 of this, ball 1/50
+	static int frameHeight = 600; //windowHeight = 600;  //player is 1/6 of this
 
-	public Frame(pong p){
+	public Frame(){
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//this size includes border!
-		setSize(frameWidth,frameHeight);
 		setTitle("PONG");
+
+		//this size includes border!!
+		setSize(frameWidth,frameHeight);
 		setResizable(false);
-		initialise(p);
 	}
 
-	public void initialise(pong game)
+	public void initialise(pongGUI guiPanel)
 	{
 		setLayout(new GridLayout(1,1));
-		pongGUI gui = new pongGUI(frameWidth, frameHeight, game); //screen is a JPanel
-		add(gui);
+		add(guiPanel);
 
 		setLocationRelativeTo(null);
 		setVisible(true);
+
 		pong.print("frame insets now known as " + getInsets());
 	}
 }

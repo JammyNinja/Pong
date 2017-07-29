@@ -210,14 +210,14 @@ class Player {
 	}
 }
 
-//game only needs three of the functions, moveBall, called per timestep
-//and hitPlayer, obviously called when a player collides with the ball
-//and reset for when the point is over
+//moveBall, is called per timestep
+//hitPlayer is called when games decides that a player collided with the balll
+//and resetBall stops and centers the ball
 class Ball {
 	int xPos;
 	int yPos;
 	
-	int dy; //I propose a number from a set of 5, where 0 = straight, +2 = max south, -2 = max north
+	int dy; //I propose a number from a set of 6, -3 -> +3, where +-1 = straight
 	int dx; //how far the ball moves to the side with each timestep, positive = right, neg left
 
 	static int diameter;
@@ -277,7 +277,7 @@ class Ball {
 		dx = 0; 
 		dy = 0;
 	}
-
+	//called by game.scheckBallPlayer()
 	//change angle (dy) depending on where it hit on the player (hitSpot)
 	//hitspot -1 top, 0 mid, 1 bottom
 	public void hitPlayer(int hitSpot){

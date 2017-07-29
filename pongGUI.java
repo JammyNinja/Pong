@@ -1,4 +1,3 @@
-//package components; // JComponent
 import javax.swing.*; //JPanel/containers/scrollpane
 import java.awt.*; //Dimension/colour/graphics
 import java.awt.event.KeyEvent;
@@ -7,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class pongGUI extends JPanel
-						implements KeyListener//, ActionListener
+						implements KeyListener
 {
 	int windowWidth;	//1000, player 1/100 of this, ball 1/50
 	int widthUnit; 		//100 blocks of width, also half the ball size - for now my target ball granularity
@@ -42,7 +41,7 @@ public class pongGUI extends JPanel
 		
 		pong.print("gui constructed.");
 	}
-
+	//initalise all gui variables using frame size
 	public void initGUI(Frame f){
 		pong.print("initialising gui...");
 
@@ -118,7 +117,7 @@ public class pongGUI extends JPanel
 		paintPlayers(g);
 		paintScore(g);
 	}
-	//black and white should be set to call from a global foreground/background colour
+	//paints net and edges
 	public void paintCourt(Graphics g){
 		//draw net
 		int netGaps = ballDiameter;

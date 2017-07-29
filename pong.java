@@ -35,12 +35,11 @@ current:
 	static pongGUI gui;
 	static Timer t;
 	static pong game;
-	static boolean gameStarted = false;
+	//static boolean gameStarted = false;
 	
 	public static void main(String[] args){
-		System.out.println("pong, on git");
+		System.out.println("Pong, by Louis. Enjoy!");
 		game = new pong();
-		//gameInstance = game;
 		gui = new pongGUI(game);
 
 		//move timer into setup game, gameinstance to be solved at the same time
@@ -50,8 +49,7 @@ current:
 
 	//starts timer and changes the game state
 	public static void startGame(){
-		//gameInstance is the actionlistener
-		gameStarted = true;
+		//gameStarted = true;
 		t.start();
 		print("game started");
 	}
@@ -63,7 +61,6 @@ current:
 		t = new Timer(50, game);
 
 		print("game setup done, all moving parts initialised");
-		//why isn't the background engaged at this point!?
 	}
 	
 	//called per timestep
@@ -83,11 +80,12 @@ current:
 		
 		//coming at player on left, p1
 		if(ball.dx < 0){
+			//did it hit the player at all
 			if(ball.xPos <= p1.xPos && ball.xPos >= p1.xPos-gui.widthUnit){
-				if(ball.yPos + ball.diameter > p1.yPos - gui.playerRadius && ball.yPos < p1.yPos + gui.playerRadius){
-					//definitely hit the player now decide where
+				if(ball.yPos + gui.ballDiameter > p1.yPos - gui.playerRadius && ball.yPos < p1.yPos + gui.playerRadius){
+					//yes it hit, but where:
 					//top quarter
-					if(ball.yPos + ball.diameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					if(ball.yPos + gui.ballDiameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
 					//bottom quarter
 					else if(ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
 					//centre half
@@ -98,11 +96,12 @@ current:
 
 		//coming at player on right, p2
 		if(ball.dx > 0){
-			if(ball.xPos + ball.diameter >= p2.xPos && ball.xPos+ball.diameter <= p2.xPos+gui.widthUnit){
-				if(ball.yPos + ball.diameter > p2.yPos - gui.playerRadius && ball.yPos < p2.yPos + gui.playerRadius){
-					//definitely hit the player now decide where
+			//did it hit the player at all
+			if(ball.xPos + gui.ballDiameter >= p2.xPos && ball.xPos+gui.ballDiameter<= p2.xPos+gui.widthUnit){
+				if(ball.yPos + gui.ballDiameter > p2.yPos - gui.playerRadius && ball.yPos < p2.yPos + gui.playerRadius){
+					//yes it hit, but where:
 					//top quarter
-					if(ball.yPos + ball.diameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					if(ball.yPos + gui.ballDiameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
 					//bottom quarter
 					else if(ball.yPos >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
 					//centre half
@@ -130,8 +129,8 @@ current:
 		if(winner == 1) p1.points ++;
 		else if (winner == 2) p2.points++;
 		else print("who won that point?!");
-		//stop the ball
-		ball.endPoint();
+		//reset the ball
+		ball.resetBall();
 		//auto starting point for now
 		startPoint(winner);
 	}
@@ -225,26 +224,27 @@ class Ball {
 	static int yUnit, xUnit;
 
 	public Ball(pongGUI gui){
-		//fixed bounds based on gui
+		//fixed bounds based on gui - which paints from top left of ball
+		this.northWall = 0; 
 		this.southWall = gui.windowHeight - gui.ballDiameter;
-		this.northWall = 0 + gui.ballDiameter;
-		this.resetX = gui.windowXCentre;
-		this.resetY = gui.windowYCentre;
-		this.yUnit = gui.heightUnit;
+		this.resetX = gui.windowXCentre - gui.ballDiameter / 2;
+		this.resetY = gui.windowYCentre - gui.ballDiameter / 2;
+		
+		//granularity of ball movement
 		this.xUnit = gui.widthUnit;
+		this.yUnit = gui.heightUnit;
 
-		//these ones change during game
-		this.dy = 0; //starts straight
-		this.xPos = resetX;
-		this.yPos = resetY;
+		//place the ball
+		resetBall();
 		
 		pong.print("Ball initialised");
 	}
 
 	//called per timestep
 	public void moveBall(){
+		//bounce taken care of by hitPlayer()<-game which comminicates with players
 		xPos += dx;
-		//seperate function to take into account walls
+		//seperate function to take into account walls -> bounce
 		updateYPos();
 	}
 
@@ -269,11 +269,11 @@ class Ball {
 		dx = server == 1 ? -xUnit : xUnit ; //winner should start
 	}
 	//put the ball in the middle, send it towards the winner
-	public void endPoint(){
-		dx = 0; 
-		dy = 0;
+	public void resetBall(){
 		xPos = resetX;
 		yPos = resetY;
+		dx = 0; 
+		dy = 0;
 	}
 
 	//change angle (dy) depending on where it hit on the player (hitSpot)
@@ -285,7 +285,6 @@ class Ball {
 		dx = -dx;
 
 		//bounce vertical:
-
 		//coming straight
 		if(dy == 0){
 			if(hitSpot == 0) {dy = 0;}

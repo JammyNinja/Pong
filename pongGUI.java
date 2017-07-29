@@ -60,10 +60,10 @@ public class pongGUI extends JPanel
 		this.windowWidth 	= f.frameWidth;
 		this.windowHeight 	= f.frameHeight;
 		//units to gridify things
-		this.widthUnit 		= windowWidth 	/ 100;
-		this.heightUnit 	= windowHeight 	/ 30; //=20
+		this.widthUnit 		= windowWidth 	/ 100; // s=100
+		this.heightUnit 	= windowHeight 	/ 30;  // =20
 
-		this.playerHeight	= heightUnit 	* 6 ; //windowHeight	/ 6;
+		this.playerHeight	= heightUnit 	* 6 ;  //must be divisble by 6
 		this.playerRadius 	= playerHeight	/ 2;
 
 		this.playerSixth	= playerHeight 	/ 6;
@@ -121,14 +121,14 @@ public class pongGUI extends JPanel
 	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
 		g.setColor(Color.WHITE);
-		if(game.gameStarted) {
+		//if(game.gameStarted) {
 			paintNet(g);
 			paintBall(g);
 			paintPlayers(g);
 
 			g.drawLine(0,windowHeight-1,windowWidth,windowHeight-1);
 			paintScore(g);
-		}
+		//}
 	}
 
 	//black and white should be set to call from a global foreground/background colour
@@ -147,12 +147,12 @@ public class pongGUI extends JPanel
 		}
 		g.setColor(Color.WHITE);
 	}
-
+	//paints ball from its top left
 	public void paintBall(Graphics g) {
 		
 		g.fillRect(game.ball.xPos, game.ball.yPos, ballDiameter, ballDiameter); //x,y,width,height 
 	}
-
+	//paints players from their centre 
 	public void paintPlayers(Graphics g){
 		//player 1
 		g.fillRect(game.p1.xPos, game.p1.yPos - playerRadius, playerWidth, playerHeight);

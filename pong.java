@@ -13,7 +13,6 @@ current:
 		GUI
 		point displaying with Jlabels as its not symmetrical :/
 		^why does it lag at opening when painting score?
-		should I be painting objects from their centre? :/
 		forground and background colours variable - maybe even players and ball...
 
 		GAME
@@ -46,12 +45,12 @@ current:
 		startGame();
 	}
 
-	//starts timer and changes the game state
+	//starts timer -> calls action performed
 	public static void startGame(){
 		t.start();
 		print("game started");
 	}
-
+	//instantiates movable parts and timer
 	public static void setupGame(){
 		p1 = new Player(1, gui);
 		p2 = new Player(2, gui);
@@ -115,11 +114,11 @@ current:
 
 	//checks if ball out of x bounds, and calls resetPoint accordingly
 	public void checkPointOver(){
-		//ball out of bounds p1 score
+		//p1 score
 		if(ball.xPos > gui.windowWidth - gui.goalDepth){
 			endPoint(1);
-
-		} //p2 scored
+		} 
+		//p2 scored
 		else if (ball.xPos < gui.goalDepth){
 			endPoint(2);
 		}
@@ -130,7 +129,7 @@ current:
 		if(winner == 1) p1.points ++;
 		else if (winner == 2) p2.points++;
 		else print("who won that point?!");
-
+		//Officially mark the score
 		print("Point scored by player " + winner +". " + p1.points +"-" + p2.points);
 		//reset the ball
 		ball.resetBall();

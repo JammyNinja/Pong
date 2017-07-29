@@ -113,24 +113,16 @@ public class pongGUI extends JPanel
 	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
 		g.setColor(Color.WHITE);
-		//if(game.gameStarted) {
-			paintNet(g);
-			paintBall(g);
-			paintPlayers(g);
-
-			g.drawLine(0,windowHeight-1,windowWidth,windowHeight-1);
-			
-			g.drawLine(0,0,windowWidth,0);
-			paintScore(g);
-		//}
+		paintCourt(g);
+		paintBall(g);
+		paintPlayers(g);
+		paintScore(g);
 	}
 	//black and white should be set to call from a global foreground/background colour
-	public void paintNet(Graphics g){
-				
+	public void paintCourt(Graphics g){
+		//draw net
 		int netGaps = ballDiameter;
 		int netX = windowWidth/2;
-		
-		boolean flip = true;
 		//gui stops drawing players if <= in the stop condition, apprently you cant draw out of bounds...
 		for(int brushY =0; brushY< windowHeight; brushY+=netGaps){
 			g.drawLine(netX, brushY, netX, brushY+netGaps);
@@ -138,18 +130,23 @@ public class pongGUI extends JPanel
 			if(g.getColor() == Color.WHITE) g.setColor(Color.BLACK);
 			else g.setColor(Color.WHITE);
 		}
+		//make sure to finsih on white
 		g.setColor(Color.WHITE);
+
+		//draw lines on horizontal edges
+		g.drawLine(0,windowHeight-1,windowWidth,windowHeight-1);
+		g.drawLine(0,0,windowWidth,0);
+
 	}
 	//paints ball from its top left
 	public void paintBall(Graphics g) {
 		
 		g.fillRect(game.ball.xPos, game.ball.yPos, ballDiameter, ballDiameter); //x,y,width,height 
 	}
-	//paints players from their centre 
+	//paints players from their vertical centre, left
 	public void paintPlayers(Graphics g){
 		//player 1
 		g.fillRect(game.p1.xPos, game.p1.yPos - playerRadius, playerWidth, playerHeight);
-
 		//player 2
 		g.fillRect(game.p2.xPos, game.p2.yPos - playerRadius, playerWidth, playerHeight);
 	}

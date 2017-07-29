@@ -9,7 +9,8 @@ current:
 		pause with space bar
 		serve again with space - or by moving I see
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
-		
+		^why even does it freeze?!
+
 		GUI
 		point displaying with Jlabels as its not symmetrical :/
 		^why does it lag at opening when painting score?
@@ -23,6 +24,7 @@ current:
 
 		TIDYING
 		- sort the statics
+		Git merge?
 
 		FUTURE FEATURES
 		p2 AI
@@ -210,7 +212,7 @@ class Player {
 	}
 }
 
-//moveBall, is called per timestep
+//moveBall is called per timestep
 //hitPlayer is called when games decides that a player collided with the balll
 //and resetBall stops and centers the ball
 class Ball {

@@ -27,6 +27,7 @@ public class pongGUI extends JPanel
 	int goalDepth;
 	int windowXCentre;
 	int windowYCentre;
+	int northLimit; //set by frame after pack()
 
 	pong game;
 	Frame f;
@@ -60,6 +61,7 @@ public class pongGUI extends JPanel
 		this.windowHeight 	= f.frameHeight;
 		this.windowXCentre	= windowWidth 	/ 2;
 		this.windowYCentre 	= windowHeight 	/ 2;
+
 		//units to gridify things
 		this.widthUnit 		= windowWidth 	/ 100;	// s=100
 		this.heightUnit 	= windowHeight 	/ 30;	// =20
@@ -83,19 +85,19 @@ public class pongGUI extends JPanel
 	public void keyPressed(KeyEvent e){
 		switch(e.getKeyCode()){
 			case KeyEvent.VK_W:
-				game.p1.moveUp();
+				if(!game.pause) game.p1.moveUp();
 			break;
 
 			case KeyEvent.VK_S:
-				game.p1.moveDown();
+				if(!game.pause) game.p1.moveDown();
 			break;
 
 			case KeyEvent.VK_UP:
-				game.p2.moveUp();
+				if(!game.pause) game.p2.moveUp();
 			break;
 
 			case KeyEvent.VK_DOWN:
-				game.p2.moveDown();
+				if(!game.pause) game.p2.moveDown();
 			break;
 
 			case KeyEvent.VK_ESCAPE:
@@ -105,7 +107,8 @@ public class pongGUI extends JPanel
 
 			case KeyEvent.VK_SPACE:
 				game.print("SPACE!");
-				game.startPoint(1);
+				//game.startPoint(1);
+				game.pauseGame();
 			break;
 		}
 	}
@@ -156,6 +159,8 @@ public class pongGUI extends JPanel
 		g.setFont(new Font("Comic Sans MS", Font.PLAIN, fontSize));
 		g.drawString("" + game.p1.points, windowXCentre - fontSize, 50);
 		g.drawString(""+ game.p2.points, windowXCentre + scoreGap, 50);
+
+		if(game.pause) g.drawString("PAUSED!", windowXCentre - fontSize, northLimit);
 	}
 	//unused
 	public void keyReleased(KeyEvent e){}
@@ -178,6 +183,7 @@ class Frame extends JFrame {
 		setLayout(new GridLayout(1,1));
 		add(guiPanel);
 		pack();
+		guiPanel.northLimit = getInsets().top;
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}

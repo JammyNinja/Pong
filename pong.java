@@ -24,7 +24,6 @@ current:
 
 		TIDYING
 		- sort the statics
-		Git merge?
 
 		FUTURE FEATURES
 		p2 AI
@@ -36,6 +35,7 @@ current:
 	static pongGUI gui;
 	static Timer t;
 	static pong game;
+	static boolean pause = false;
 	
 	public static void main(String[] args){
 		System.out.println("Pong, by Louis. Enjoy!");
@@ -50,6 +50,7 @@ current:
 	//starts timer -> calls action performed
 	public static void startGame(){
 		t.start();
+		ball.serve(1);
 		print("game started");
 	}
 	//instantiates movable parts and timer
@@ -64,7 +65,7 @@ current:
 	
 	//called per timestep
 	public void actionPerformed(ActionEvent e) {
-		ball.moveBall();
+		if(!pause) ball.moveBall();
 		
 		//check if hit player
 		checkBallPlayer();
@@ -142,6 +143,10 @@ current:
 	public void startPoint(int server){
 		//p1.reset(); p2.reset();
 		ball.serve(server);
+	}
+
+	public void pauseGame(){
+		pause = !pause;
 	}
 
 	public void quitGame(){
@@ -272,6 +277,11 @@ class Ball {
 	public void serve(int server){
 		dx = server == 1 ? -xUnit : xUnit ; //winner should start
 	}
+
+	public void pause(){
+
+	}
+
 	//put the ball in the middle, send it towards the winner
 	public void resetBall(){
 		xPos = resetX;

@@ -35,7 +35,6 @@ current:
 	static pongGUI gui;
 	static Timer t;
 	static pong game;
-	//static boolean gameStarted = false;
 	
 	public static void main(String[] args){
 		System.out.println("Pong, by Louis. Enjoy!");
@@ -49,7 +48,6 @@ current:
 
 	//starts timer and changes the game state
 	public static void startGame(){
-		//gameStarted = true;
 		t.start();
 		print("game started");
 	}
@@ -81,8 +79,10 @@ current:
 		//coming at player on left, p1
 		if(ball.dx < 0){
 			//did it hit the player at all
-			if(ball.xPos <= p1.xPos && ball.xPos >= p1.xPos-gui.widthUnit){
-				if(ball.yPos + gui.ballDiameter > p1.yPos - gui.playerRadius && ball.yPos < p1.yPos + gui.playerRadius){
+			if(p1.xPos <= ball.xPos &&
+				p1.xPos + gui.playerWidth >= ball.xPos){
+				if(p1.yPos - gui.playerRadius < ball.yPos + gui.ballDiameter &&
+					p1.yPos + gui.playerRadius > ball.yPos ){
 					//yes it hit, but where:
 					//top quarter
 					if(ball.yPos + gui.ballDiameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
@@ -97,8 +97,10 @@ current:
 		//coming at player on right, p2
 		if(ball.dx > 0){
 			//did it hit the player at all
-			if(ball.xPos + gui.ballDiameter >= p2.xPos && ball.xPos+gui.ballDiameter<= p2.xPos+gui.widthUnit){
-				if(ball.yPos + gui.ballDiameter > p2.yPos - gui.playerRadius && ball.yPos < p2.yPos + gui.playerRadius){
+			if(p2.xPos <= ball.xPos + gui.ballDiameter && 
+				p2.xPos + gui.playerWidth >= ball.xPos + gui.ballDiameter){
+				if(p2.yPos - gui.playerRadius < ball.yPos + gui.ballDiameter &&
+					p2.yPos + gui.playerRadius > ball.yPos ){
 					//yes it hit, but where:
 					//top quarter
 					if(ball.yPos + gui.ballDiameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
@@ -114,21 +116,22 @@ current:
 	//checks if ball out of x bounds, and calls resetPoint accordingly
 	public void checkPointOver(){
 		//ball out of bounds p1 score
-		if(ball.xPos > gui.windowWidth - gui.widthUnit){
+		if(ball.xPos > gui.windowWidth - gui.goalDepth){
 			endPoint(1);
 
 		} //p2 scored
-		else if (ball.xPos < gui.widthUnit){
+		else if (ball.xPos < gui.goalDepth){
 			endPoint(2);
 		}
 	}
 
 	public void endPoint(int winner){
-		print("Point scored by player " + winner);
 		//points to the winner
 		if(winner == 1) p1.points ++;
 		else if (winner == 2) p2.points++;
 		else print("who won that point?!");
+
+		print("Point scored by player " + winner +". " + p1.points +"-" + p2.points);
 		//reset the ball
 		ball.resetBall();
 		//auto starting point for now

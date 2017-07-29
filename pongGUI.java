@@ -15,17 +15,17 @@ public class pongGUI extends JPanel
 	int windowHeight;	//600, player is 1/6 of this
 	int heightUnit; 	//50 blocks of height, one fifth of the player height //- so that the player can be split into 5
 	
+	int p1x,p2x;
 	int playerHeight;
 	int playerWidth;
 	int playerDepth;	//player positioned 1/20 of the width of game
 	int playerRadius;
 	int playerSixth;
 	
-	int p1x,p2x;
-	int player2y;
-	int ballDiameter;
 	int ballX, ballY;
+	int ballDiameter;
 		
+	int goalDepth;
 	int windowXCentre;
 	int windowYCentre;
 
@@ -59,31 +59,28 @@ public class pongGUI extends JPanel
 		//initalise gui values, based on the frame size
 		this.windowWidth 	= f.frameWidth;
 		this.windowHeight 	= f.frameHeight;
+		this.windowXCentre	= windowWidth 	/ 2;
+		this.windowYCentre 	= windowHeight 	/ 2;
 		//units to gridify things
-		this.widthUnit 		= windowWidth 	/ 100; // s=100
-		this.heightUnit 	= windowHeight 	/ 30;  // =20
-
-		this.playerHeight	= heightUnit 	* 6 ;  //must be divisble by 6
+		this.widthUnit 		= windowWidth 	/ 100;	// s=100
+		this.heightUnit 	= windowHeight 	/ 30;	// =20
+		//player variables
+		this.playerHeight	= heightUnit 	* 6;	//must be divisble by 6
 		this.playerRadius 	= playerHeight	/ 2;
-
 		this.playerSixth	= playerHeight 	/ 6;
 		this.playerWidth	= windowWidth	/ 100;
 		this.playerDepth	= windowWidth 	/ 20;
+		this.p1x 			= playerDepth;
+		this.p2x 			= windowWidth - playerDepth - playerWidth; //take into account width for painting from left side
 
-		this.windowXCentre	= windowWidth 	/ 2;
-		this.windowYCentre 	= windowHeight 	/ 2;
-
-		this.ballDiameter = windowWidth		/ 50;
-		this.p1x = playerDepth;
-		this.p2x = windowWidth - playerDepth;
-
-		
+		this.ballDiameter 	= windowWidth	/ 50;
+		this.goalDepth 		= playerDepth - ballDiameter;
 
 		f.initialise(this);
 		game.print("GUI initialised.");
 
 	}
-
+	//keyboard inputs handled here
 	public void keyPressed(KeyEvent e){
 		switch(e.getKeyCode()){
 			case KeyEvent.VK_W:
@@ -113,11 +110,6 @@ public class pongGUI extends JPanel
 			break;
 		}
 	}
-
-	public void keyReleased(KeyEvent e){}
-	
-	public void keyTyped(KeyEvent e){}
-
 	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
 		g.setColor(Color.WHITE);
@@ -127,10 +119,11 @@ public class pongGUI extends JPanel
 			paintPlayers(g);
 
 			g.drawLine(0,windowHeight-1,windowWidth,windowHeight-1);
+			
+			g.drawLine(0,0,windowWidth,0);
 			paintScore(g);
 		//}
 	}
-
 	//black and white should be set to call from a global foreground/background colour
 	public void paintNet(Graphics g){
 				
@@ -160,7 +153,7 @@ public class pongGUI extends JPanel
 		//player 2
 		g.fillRect(game.p2.xPos, game.p2.yPos - playerRadius, playerWidth, playerHeight);
 	}
-
+	//needs aligning, prolly with a component or sth
 	public void paintScore(Graphics g){
 		int fontSize = 25;
 		int scoreGap = 10;
@@ -168,6 +161,9 @@ public class pongGUI extends JPanel
 		g.drawString("" + game.p1.points, windowXCentre - fontSize, 50);
 		g.drawString(""+ game.p2.points, windowXCentre + scoreGap, 50);
 	}
+	//unused
+	public void keyReleased(KeyEvent e){}
+	public void keyTyped(KeyEvent e){}
 }
 
 class Frame extends JFrame {
@@ -175,22 +171,18 @@ class Frame extends JFrame {
 	static int frameHeight = 600; //windowHeight = 600;  //player is 1/6 of this
 
 	public Frame(){
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("PONG");
-
-		//this size includes border!!
 		setSize(frameWidth,frameHeight);
 		setResizable(false);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	public void initialise(pongGUI guiPanel)
 	{
 		setLayout(new GridLayout(1,1));
 		add(guiPanel);
-		//pack();
-		setLocationRelativeTo(null);
 		pack();
-		pong.print("frame insets now known as " + getInsets());
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 }

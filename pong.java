@@ -3,10 +3,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current:
+current:	forground and background colours variable - maybe even players and ball...
 
 		TIMING
-		pause with space bar
 		serve again with space - or by moving I see
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
 		^why even does it freeze?!
@@ -14,13 +13,13 @@ current:
 		GUI
 		point displaying with Jlabels as its not symmetrical :/
 		^why does it lag at opening when painting score?
-		forground and background colours variable - maybe even players and ball...
 
 		GAME
-		if you press space after auto serve sometimes it switches direction
 		player point score function?
 		player names
 		players not moving fast enough/ hold buttons plz
+		auto serve or nah?
+		more player hit granularity - divisible by 6 now
 
 		TIDYING
 		- sort the statics

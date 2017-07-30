@@ -31,6 +31,8 @@ public class pongGUI extends JPanel
 
 	pong game;
 	Frame f;
+	JLabel scoreLabel;
+	Font guiFont = new Font("Monospaced", Font.PLAIN, 25);
 
 	public pongGUI(pong game) {
 		pong.print("constructing gui...");
@@ -76,7 +78,8 @@ public class pongGUI extends JPanel
 
 		this.ballDiameter 	= windowWidth	/ 50;
 		this.goalDepth 		= playerDepth - ballDiameter;
-
+		
+		//done making gui pass it to frame
 		f.initialise(this);
 		game.print("GUI initialised.");
 
@@ -107,7 +110,6 @@ public class pongGUI extends JPanel
 
 			case KeyEvent.VK_SPACE:
 				game.print("SPACE!");
-				//game.startPoint(1);
 				game.pauseGame();
 			break;
 		}
@@ -115,6 +117,8 @@ public class pongGUI extends JPanel
 	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
 		g.setColor(Color.WHITE);
+		g.setFont(guiFont);
+
 		paintCourt(g);
 		paintBall(g);
 		paintPlayers(g);
@@ -156,7 +160,6 @@ public class pongGUI extends JPanel
 	public void paintScore(Graphics g){
 		int fontSize = 25;
 		int scoreGap = 10;
-		g.setFont(new Font("Comic Sans MS", Font.PLAIN, fontSize));
 		g.drawString("" + game.p1.points, windowXCentre - fontSize, 50);
 		g.drawString(""+ game.p2.points, windowXCentre + scoreGap, 50);
 

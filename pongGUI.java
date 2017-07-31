@@ -114,6 +114,10 @@ public class pongGUI extends JPanel
 				game.print("SPACE!");
 				game.pauseGame();
 			break;
+			case KeyEvent.VK_ENTER:
+				game.print("ENTER!");
+				if(game.gameOver) game.newGame();
+			break;
 		}
 	}
 	//called per timestep from pong.actionPerformed

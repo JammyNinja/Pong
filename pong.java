@@ -17,7 +17,6 @@ current:
 		GAME
 		players not moving fast enough/ hold buttons plz
 		auto serve or nah?
-		play a match? score limit etc
 		player point score function?
 		some issue with the ball collision detection , sometimes doesnt register something that looks liek a hit, maybe should do something about player width?
 		^demonstratable from start move player 1 down 3, player 2 down 2 or 3
@@ -35,6 +34,8 @@ current:
 	static pong game;
 	static Timer t;
 	static boolean pause = false;
+	static boolean gameOver = false;
+	static int scoreToWin = 5;
 	
 	public static void main(String[] args){
 		System.out.println("Pong, by Louis. Enjoy!");
@@ -48,6 +49,7 @@ current:
 	//starts timer -> calls action performed
 	public static void startGame(){
 		t.start();
+		pause = false; gameOver = false;
 		ball.serve(1);
 		print("game started");
 	}
@@ -60,7 +62,12 @@ current:
 
 		print("game setup done, all moving parts initialised");
 	}
-	
+	public void newGame(){
+		p1.points = 0;
+		p2.points = 0;
+		ball.resetBall();
+		startGame();
+	}
 	//called per timestep
 	public void actionPerformed(ActionEvent e) {
 		if(!pause) ball.moveBall();
@@ -140,6 +147,18 @@ current:
 		}
 	}
 
+	public int checkGameOver(){
+		if(p1.points == scoreToWin) {
+			pong.print("Player 1 wins!");
+			return 1;
+		}
+		else if(p2.points == scoreToWin) {
+			pong.print("Player 2 wins!");
+			return 2;
+		}
+		else return 0; //not over
+	}
+
 	public void endPoint(int winner){
 		//points to the winner
 		if(winner == 1) p1.points ++;
@@ -149,8 +168,11 @@ current:
 		print("Point scored by player " + winner +". " + p1.points +"-" + p2.points);
 		//reset the ball
 		ball.resetBall();
-		//auto starting point for now
-		startPoint(winner);
+		
+		if (checkGameOver() == 0) startPoint(winner);
+		//we have a winner! new game?
+		else gameOver = true;
+		
 	}
 	//consider letting the players be free
 	public void startPoint(int server){

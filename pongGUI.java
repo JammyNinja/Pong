@@ -34,7 +34,7 @@ public class pongGUI extends JPanel
 	JLabel scoreLabel;
 	Font guiFont = new Font("Monospaced", Font.PLAIN, 25);
 	Color background = Color.BLACK;
-	Color foreground = Color.YELLOW;
+	Color foreground = Color.WHITE;
 
 	public pongGUI(pong game) {
 		pong.print("constructing gui...");

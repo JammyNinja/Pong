@@ -3,8 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current: 	ball hit player function take into account sixths instead of thirds
-sub: more player hit granularity - divisible by 6 now
+current: 	
 
 		TIMING
 		serve again with space - or by moving I see
@@ -13,28 +12,28 @@ sub: more player hit granularity - divisible by 6 now
 
 		GUI
 		point displaying with Jlabels as its not symmetrical :/
-		^why does it lag at opening when painting score?
+		^why does it lag at opening when painting score with text :(?
 
 		GAME
-		player point score function?
-		player names
 		players not moving fast enough/ hold buttons plz
 		auto serve or nah?
 		play a match? score limit etc
-
+		player point score function?
+		some issue with the ball collision detection , sometimes doesnt register something that looks liek a hit, maybe should do something about player width?
+		^demonstratable from start move player 1 down 3, player 2 down 2 or 3
 		TIDYING
 		- sort the statics
 
 		FUTURE FEATURES
-		p2 AI
+		p2 AI - doable i reckon in a greedy zombie player way
 		playable on a webpage
 	*/
 
 	static Player p1,p2;
 	static Ball ball;
 	static pongGUI gui;
-	static Timer t;
 	static pong game;
+	static Timer t;
 	static boolean pause = false;
 	
 	public static void main(String[] args){
@@ -42,7 +41,6 @@ sub: more player hit granularity - divisible by 6 now
 		game = new pong();
 		gui = new pongGUI(game);
 
-		//move timer into setup game, gameinstance to be solved at the same time
 		setupGame();
 		startGame();
 	}
@@ -89,22 +87,16 @@ sub: more player hit granularity - divisible by 6 now
 				if(p1.yPos - gui.playerRadius < ball.yPos + gui.ballDiameter &&
 					p1.yPos + gui.playerRadius > ball.yPos ){
 					//yes it hit, but where:
-					//top quarter
-					//if(ball.yPos + gui.ballDiameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
-					//bottom quarter
-					//else if(ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
-					//centre half
-					//else ball.hitPlayer(0);
 
 					//top sixth
 					if(ball.yPos + gui.ballDiameter <= p1.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
-					//bottom sixth
-					else if(ball.yPos >= p1.yPos + 2*gui.playerSixth) ball.hitPlayer(2);
-					
 					//2nd from top sixth
 					else if(ball.yPos + gui.ballDiameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					
+					//bottom sixth
+					else if(ball.yPos >= p1.yPos + 2*gui.playerSixth) ball.hitPlayer(2);
 					//2nd from bottom sixth
-					else if (ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
+					else if(ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
 					//centre third
 					else ball.hitPlayer(0);
 				}
@@ -119,12 +111,6 @@ sub: more player hit granularity - divisible by 6 now
 				if(p2.yPos - gui.playerRadius < ball.yPos + gui.ballDiameter &&
 					p2.yPos + gui.playerRadius > ball.yPos ){
 					//yes it hit, but where:
-					//top quarter
-					//if(ball.yPos + gui.ballDiameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
-					//bottom quarter
-					//else if(ball.yPos >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
-					//centre half
-					//else ball.hitPlayer(0);
 
 					//top sixth
 					if(ball.yPos + gui.ballDiameter <= p2.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
@@ -137,7 +123,6 @@ sub: more player hit granularity - divisible by 6 now
 					else if (ball.yPos >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
 					//centre third
 					else ball.hitPlayer(0);
-
 				}
 			}
 		}
@@ -277,7 +262,7 @@ class Ball {
 		pong.print("Ball initialised");
 	}
 
-	//called per timestep
+	//called per timestep, unless game paused
 	public void moveBall(){
 		//bounce taken care of by hitPlayer()<-game which comminicates with players
 		xPos += dx;
@@ -306,10 +291,6 @@ class Ball {
 		dx = server == 1 ? -xUnit : xUnit ; //winner should start
 	}
 
-	public void pause(){
-
-	}
-
 	//put the ball in the middle, send it towards the winner
 	public void resetBall(){
 		xPos = resetX;
@@ -321,33 +302,83 @@ class Ball {
 	//change angle (dy) depending on where it hit on the player (hitSpot)
 	//hitspot -1 top, 0 mid, 1 bottom
 	public void hitPlayer(int hitSpot){
-		//pong.print("hit spot: " + hitSpot + " dy " + dy);
+		pong.print("hit player on spot: " + hitSpot + ", incoming dy " + dy);
 
-		//bounce horizontal
+		//bounce ball horizontally
 		dx = -dx;
 
-		//bounce vertical:
+		//bounce vertically, depending on incoming angle and hit location:
 		//coming straight
 		if(dy == 0){
-			if(hitSpot == 0) {dy = 0;}
-			else if (hitSpot > 0) {dy = yUnit;}
-			else if (hitSpot < 0) {dy = -yUnit;}
-			else pong.print ("somethings up with dy 0");
+			dy = hitSpot * yUnit; //when coming straight dy is a function of hitSpot
+			/* might leave this as comment to justify the line above
+			switch(hitSpot){
+				case -2:	 dy = -2*yUnit;		break;
+				case -1:	 dy = -yUnit; 		break;
+				case  0:	 dy = 0; 			break;
+				case  1:	 dy = yUnit;		break;
+				case  2:	 dy = 2*yUnit;		break; 
+				default: pong.print ("somethings up with ball hit player dy 0"); break;
+			}*/
  		}
 
  		//coming in north to south
  		else if(dy > 0){
- 			if(hitSpot < 0) {dy *= -1;} //top of player send it back where it came
- 			else if(hitSpot > 0) {dy =0;}
- 			else dy=dy;
- 			//else centre player, doesnt change angle 
+ 			//coming in 'smoothly'
+ 			if(dy == yUnit){
+ 				switch(hitSpot){
+ 					case -2:	 dy = dy*-2;	break; //send it back with more angle
+ 					case -1:	 dy = -dy; 		break; //send it back the way it came
+ 					case  0:	 dy = dy; 		break; //ordinary bounce
+ 					case  1:	 dy = 0; 		break; //'cancels out' result horizontal ball
+ 					case  2:	 dy = dy*2;		break; //add more to the angle
+ 					default: pong.print ("somethings up with ball hit player dy > 0");
+ 					break; 
+ 				}
+ 			}
+ 			//coming in hard
+ 			else if(dy == 2*yUnit){
+ 				switch(hitSpot){
+ 					case -2:	 dy = -dy;		break; //send it back the way it came
+ 					case -1:	 dy = dy/2;		break; //smooth the angle
+ 					case  0:	 dy = dy/2; 	break; //smooth the angle
+ 					case  1:	 dy = dy; 		break; //ordinary bounce
+ 					case  2:	 dy = 0;		break; //'cancels out' the momentum = horizontal
+ 					default: pong.print ("somethings up with ball hit player dy >> 0");
+ 					break; 
+ 				}
+ 			}
+
+ 			else pong.print("ball angle north -> south problemz");
  		}
 
  		//coming in south to north
  		else if(dy < 0){
- 			if(hitSpot < 0) {dy = 0;}
- 			else if (hitSpot > 0) {dy *= -1;}
- 			else dy=dy;
+ 			//coming in 'smoothly'
+ 			if(dy == -yUnit){
+ 				switch(hitSpot){
+					case -2:	 dy = dy*2;		break; //add more to the angle
+					case -1:	 dy = 0; 		break; //neutralise the ball send it horizontal
+					case  0:	 dy = dy; 		break; //ordinary bounce conserve momentum
+					case  1:	 dy = -dy; 		break; //send it back the way it came
+					case  2:	 dy = dy*-2;	break; //send it back with interest
+ 					default: pong.print ("somethings up with ball hit player dy > 0");
+ 					break; 
+ 				}
+ 			}
+ 			//coming in hard
+ 			else if(dy == -2*yUnit){
+ 				switch(hitSpot){
+ 					case -2:	 dy = 0;		break; //'cancels out' the momentum
+ 					case -1:	 dy = dy;	 	break; //maintain momentum
+ 					case  0:	 dy = dy/2;		break; //calm that shit
+ 					case  1:	 dy = dy/2; 	break; //also calm that shit
+ 					case  2:	 dy = -dy;		break; //send it back the way it came
+ 					default: pong.print ("somethings up with ball hit player dy >> 0");
+ 					break; 
+ 				}
+ 			}
+ 			else pong.print("ball angle problemz");
  		}
 
  		else pong.print("wtf player hit");

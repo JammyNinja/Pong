@@ -33,6 +33,8 @@ public class pongGUI extends JPanel
 	Frame f;
 	JLabel scoreLabel;
 	Font guiFont = new Font("Monospaced", Font.PLAIN, 25);
+	Color background = Color.BLACK;
+	Color foreground = Color.YELLOW;
 
 	public pongGUI(pong game) {
 		pong.print("constructing gui...");
@@ -50,7 +52,7 @@ public class pongGUI extends JPanel
 
 		//some visual constants
 		setOpaque(true);
-		setBackground(Color.BLACK);
+		setBackground(background);
 		//not just set size, works with pack and solved frame border problem!
 		setPreferredSize(new Dimension(f.frameWidth,f.frameHeight));
 		
@@ -116,7 +118,7 @@ public class pongGUI extends JPanel
 	}
 	//called per timestep from pong.actionPerformed
 	public void paint(Graphics g){
-		g.setColor(Color.WHITE);
+		g.setColor(foreground);
 		g.setFont(guiFont);
 
 		paintCourt(g);
@@ -133,11 +135,11 @@ public class pongGUI extends JPanel
 		for(int brushY =0; brushY< windowHeight; brushY+=netGaps){
 			g.drawLine(netX, brushY, netX, brushY+netGaps);
 			//switch colour
-			if(g.getColor() == Color.WHITE) g.setColor(Color.BLACK);
-			else g.setColor(Color.WHITE);
+			if(g.getColor() == foreground) g.setColor(background);
+			else g.setColor(foreground);
 		}
 		//make sure to finsih on white
-		g.setColor(Color.WHITE);
+		g.setColor(foreground);
 
 		//draw lines on horizontal edges
 		g.drawLine(0,windowHeight-1,windowWidth,windowHeight-1);

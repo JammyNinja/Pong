@@ -3,7 +3,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current:	forground and background colours variable - maybe even players and ball...
+current: 	ball hit player function take into account sixths instead of thirds
+sub: more player hit granularity - divisible by 6 now
 
 		TIMING
 		serve again with space - or by moving I see
@@ -19,7 +20,7 @@ current:	forground and background colours variable - maybe even players and ball
 		player names
 		players not moving fast enough/ hold buttons plz
 		auto serve or nah?
-		more player hit granularity - divisible by 6 now
+		play a match? score limit etc
 
 		TIDYING
 		- sort the statics
@@ -75,6 +76,9 @@ current:	forground and background colours variable - maybe even players and ball
 	}
 
 	//calls ball.hitPlayer(x) where -1 means it hit top third, 0 centre third and 1 bottom third of player
+	//player now divisible by 6 (-3:3) going for centre third = straight(-1:1), middle sides (-2,2) = a little bent
+	//(-3,3) = bent af -- NOTE center = 0, top sixth = -2, middle top sixth = -1
+	//only 3s change dy unless its straight
 	public void checkBallPlayer(){
 		
 		//coming at player on left, p1
@@ -86,10 +90,22 @@ current:	forground and background colours variable - maybe even players and ball
 					p1.yPos + gui.playerRadius > ball.yPos ){
 					//yes it hit, but where:
 					//top quarter
-					if(ball.yPos + gui.ballDiameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					//if(ball.yPos + gui.ballDiameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
 					//bottom quarter
-					else if(ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
+					//else if(ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
 					//centre half
+					//else ball.hitPlayer(0);
+
+					//top sixth
+					if(ball.yPos + gui.ballDiameter <= p1.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
+					//bottom sixth
+					else if(ball.yPos >= p1.yPos + 2*gui.playerSixth) ball.hitPlayer(2);
+					
+					//2nd from top sixth
+					else if(ball.yPos + gui.ballDiameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					//2nd from bottom sixth
+					else if (ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
+					//centre third
 					else ball.hitPlayer(0);
 				}
 			}
@@ -104,17 +120,30 @@ current:	forground and background colours variable - maybe even players and ball
 					p2.yPos + gui.playerRadius > ball.yPos ){
 					//yes it hit, but where:
 					//top quarter
-					if(ball.yPos + gui.ballDiameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					//if(ball.yPos + gui.ballDiameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
 					//bottom quarter
-					else if(ball.yPos >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
+					//else if(ball.yPos >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
 					//centre half
+					//else ball.hitPlayer(0);
+
+					//top sixth
+					if(ball.yPos + gui.ballDiameter <= p2.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
+					//bottom sixth
+					else if(ball.yPos >= p2.yPos + 2*gui.playerSixth) ball.hitPlayer(2);
+					
+					//2nd from top sixth
+					else if(ball.yPos + gui.ballDiameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					//2nd from bottom sixth
+					else if (ball.yPos >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
+					//centre third
 					else ball.hitPlayer(0);
+
 				}
 			}
 		}
 	}
 
-	//checks if ball out of x bounds, and calls resetPoint accordingly
+	//checks if ball out of x bounds, and calls endPoint accordingly
 	public void checkPointOver(){
 		//p1 score
 		if(ball.xPos > gui.windowWidth - gui.goalDepth){

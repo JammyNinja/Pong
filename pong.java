@@ -4,7 +4,8 @@ import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
 current:	p2 AI - doable i reckon in a greedy zombie player way
-	sub: make ai game playabke. nicely, p1 arrows etc
+	sub: make ai game playabke. nicely, choice between 1 or 2 player
+
 		TIMING
 		serve again with space - or by moving I see
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
@@ -13,6 +14,7 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 		GUI
 		point displaying with Jlabels as its not symmetrical :/
 		^why does it lag at opening when painting score with text :(?
+		drugs mode
 
 		GAME
 		players not moving fast enough/ hold buttons plz

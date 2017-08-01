@@ -22,7 +22,7 @@ public class pongGUI extends JPanel
 	int playerSixth;
 	
 	int ballX, ballY;
-	int ballDiameter;
+	int ballDiameter,ballRadius;
 		
 	int goalDepth;
 	int windowXCentre;
@@ -79,6 +79,7 @@ public class pongGUI extends JPanel
 		this.p2x 			= windowWidth - playerDepth - playerWidth; //take into account width for painting from left side
 
 		this.ballDiameter 	= windowWidth	/ 50;
+		this.ballRadius 	= ballDiameter / 2;
 		this.goalDepth 		= playerDepth - ballDiameter;
 		
 		//done making gui pass it to frame

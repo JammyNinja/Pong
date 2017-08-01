@@ -1,6 +1,7 @@
 import javax.swing.*; // timer
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ThreadLocalRandom; //for use in ai movement
 public class pong implements ActionListener{
 	/* TODO
 current:	p2 AI - doable i reckon in a greedy zombie player way
@@ -74,8 +75,10 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 	}
 	//called per timestep
 	public void actionPerformed(ActionEvent e) {
-		if(!pause) ball.moveBall();
-		p2.ai(ball);
+		if(!pause) {
+			ball.moveBall();
+			p2.ai(ball); //pause stops listening to p1 inputs
+		}
 		//check if hit player
 		checkBallPlayer();
 		//is point over
@@ -122,7 +125,7 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 				if(p2.yPos - gui.playerRadius < ball.yPos + gui.ballDiameter &&
 					p2.yPos + gui.playerRadius > ball.yPos ){
 					//yes it hit, but where:
-
+					p2.targetAcquired = false; //it hit the target, no longer acquired
 					//top sixth
 					if(ball.yPos + gui.ballDiameter <= p2.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
 					//bottom sixth
@@ -215,6 +218,7 @@ class Player {
 	int yPos;			//y co-ord of the player centre
 
 	int radius; 		//player radius for 'ai'
+	boolean targetAcquired = false;
 	int netX;
 	//movement variables
 	int dy; 			//effectively the sensitivity
@@ -255,9 +259,16 @@ class Player {
 		}
 	}
 	public void ai(Ball ball){
-		if(ball.xPos > netX && ball.dx > 0) {
+		//move only when ball is coming at 'it', and it isnt already in position, and a little after p1 hit
+		if(ball.dx > 0 && !targetAcquired && ball.xPos > netX/2) {
 			if(yPos < ball.yPos) moveDown();
-			if(yPos > ball.yPos) moveUp();
+			else if(yPos > ball.yPos) moveUp();
+			//do something funky last minute if ball coming straight and its already inline
+			else if(yPos == ball.yPos && ball.dy == 0 && ball.xPos > xPos - radius){
+				targetAcquired = true;
+				int randomNum = ThreadLocalRandom.current().nextInt(-2, 2 + 1);
+					yPos -= randomNum*dy; 
+			}
 		}
 	}
 

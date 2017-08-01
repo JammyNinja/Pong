@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ThreadLocalRandom; //for use in ai movement
 import java.awt.Color; //pretty
+import java.lang.Math;
 public class pong implements ActionListener{
 	/* TODO
 current:	p2 AI - doable i reckon in a greedy zombie player way
@@ -46,16 +47,19 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 	static boolean ai = true;
 	int rainbow = 0; //set by gui
 	static boolean drugsMode = false;
+	static boolean funMode = false;
 
 	public static void main(String[] args){
 		System.out.println("Pong, by Louis. Enjoy!");
 		game = new pong();
 		gui = new pongGUI(game);
-		if(args.length >0) {
-			if(Integer.parseInt(args[0]) == 420) drugsMode = true;
-			if(Integer.parseInt(args[0]) == 2) ai = false;
-		}
 		setupGame();
+		if(args.length >0) {
+			if(args[0].equals("420")) drugsMode = true;
+			if(args[0].equals("2")) ai = false;
+			if(args[0].equals("auto")) p1.amAI = true;
+			if(args[0].equals("fun")) funMode = true;
+		}
 		startGame();
 	}
 
@@ -68,7 +72,7 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 	}
 	//instantiates movable parts and timer
 	public static void setupGame(){
-		p1 = new Player(1, gui,false);
+		p1 = new Player(1, gui, false); //p1 automatically manual, args may override after
 		p2 = new Player(2, gui, ai);
 		ball = new Ball(gui);
 		t = new Timer(50, game);
@@ -84,35 +88,45 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 	//called per timestep
 	public void actionPerformed(ActionEvent e) {
 		int colourPick;
-		if(drugsMode && !gameOver){
-			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
-			ball.colour = gui.rainbow[colourPick];
-			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
-			p1.colour = gui.rainbow[colourPick];
-			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
-			p2.colour = gui.rainbow[colourPick];
-			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
-			gui.setBackground(gui.rainbow[colourPick]);
-			gui.background = gui.rainbow[colourPick];
-			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
-			gui.foreground = gui.rainbow[colourPick];
-		}
-		if(p1.matchPoint) {
-			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
-			p1.colour = gui.rainbow[colourPick];
-			if(drugsMode) p1.colour = Color.BLACK;
-		}
-		if(p2.matchPoint) {
-			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
-			p2.colour = gui.rainbow[colourPick];
-			if(drugsMode) p2.colour = Color.BLACK;
-		}
-
-
 		if(!pause) {
 			ball.moveBall();
-			if (ai) p2.ai(ball); //pause stops listening to p1 inputs
+			if (p1.amAI) p1.ai(ball);
+			if (p2.amAI) p2.ai(ball); //pause stops listening to p1 inputs
+			//no colours should be changing if its paused...
+			
+			if(p1.matchPoint) {
+				colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+				p1.colour = gui.rainbow[colourPick];
+				if(drugsMode) p1.colour = Color.BLACK;
+			}
+			if(p2.matchPoint) {
+				colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+				p2.colour = gui.rainbow[colourPick];
+				if(drugsMode) p2.colour = Color.BLACK;
+			}
+			if(funMode){
+				colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+				ball.colour = gui.rainbow[colourPick];
+				p1.colour = gui.rainbow[colourPick];
+				p2.colour = gui.rainbow[colourPick];
+				gui.foreground = gui.rainbow[colourPick];
+			}
 		}
+		//drugs mode is drugs mode. paused or not.
+		if(drugsMode){
+				colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+				ball.colour = gui.rainbow[colourPick];
+				colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+				p1.colour = gui.rainbow[colourPick];
+				colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+				p2.colour = gui.rainbow[colourPick];
+				colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+				gui.setBackground(gui.rainbow[colourPick]);
+				gui.background = gui.rainbow[colourPick];
+				colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+				gui.foreground = gui.rainbow[colourPick];
+			}
+
 		//check if hit player
 		checkBallPlayer();
 		//is point over
@@ -135,7 +149,7 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 				if(p1.yPos - gui.playerRadius < ball.yPos + gui.ballDiameter &&
 					p1.yPos + gui.playerRadius > ball.yPos ){
 					//yes it hit, but where:
-
+					p1.targetAcquired = false;
 					//top sixth
 					if(ball.yPos + gui.ballRadius <= p1.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
 					//2nd from top sixth
@@ -308,7 +322,8 @@ class Player {
 	}
 	public void ai(Ball ball){
 		//move only when ball is coming at 'it', and it isnt already in position, and a little after p1 hit
-		if(ball.dx > 0 && !targetAcquired && ball.xPos > netX/2) {
+		if(( (playerNumber == 2 && ball.dx > 0) || (playerNumber == 1 && ball.dx < 0) )
+			 && !targetAcquired && Math.abs(ball.xPos - xPos) < 3 * netX / 2) {
 			if(yPos < ball.yPos) moveDown();
 			else if(yPos > ball.yPos) moveUp();
 			//do something funky last minute if ball coming straight and its already inline

@@ -173,8 +173,8 @@ public class pongGUI extends JPanel
 		int scoreGap = 10;
 		g.drawString("" + game.p1.points, windowXCentre - fontSize, northLimit);
 		g.drawString(""+ game.p2.points, windowXCentre + scoreGap, northLimit);
-		if(game.drugsMode) g.drawString("DRUGS.", windowXCentre - 37, 69);
-		if(game.pause) g.drawString("PAUSED!", windowXCentre - fontSize, 50);
+		if(game.drugsMode) g.drawString("DRUGS.", windowXCentre - 37, northLimit + 2*fontSize);
+		if(game.pause) g.drawString("PAUSED!", windowXCentre - 44, northLimit + fontSize);
 	}
 	//unused - mayeb this could sort the holding?!!?
 	public void keyReleased(KeyEvent e){}

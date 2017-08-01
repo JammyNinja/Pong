@@ -2,6 +2,7 @@ import javax.swing.*; // timer
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ThreadLocalRandom; //for use in ai movement
+import java.awt.Color; //pretty
 public class pong implements ActionListener{
 	/* TODO
 current:	p2 AI - doable i reckon in a greedy zombie player way
@@ -20,10 +21,12 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 		GAME
 		players not moving fast enough/ hold buttons plz
 		auto serve or nah?
-		player point score function?
+		random serve posish
+		player point score function? -- Match class? sigh
 		some issue with the ball collision detection , sometimes doesnt register something that looks liek a hit, maybe should do something about player width?
 		^demonstratable from start move player 1 down 3, player 2 down 2 or 3
 		maybe dont gridify so hard?
+		perhaps ball serparate more frequent timer for smoothness?
 
 		TIDYING
 		- sort the statics
@@ -40,13 +43,18 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 	static boolean pause = false;
 	static boolean gameOver = false;
 	static int scoreToWin = 5;
-	
+	static boolean ai = true;
+	int rainbow = 0; //set by gui
+	static boolean drugsMode = false;
+
 	public static void main(String[] args){
 		System.out.println("Pong, by Louis. Enjoy!");
 		game = new pong();
 		gui = new pongGUI(game);
-
-
+		if(args.length >0) {
+			if(Integer.parseInt(args[0]) == 420) drugsMode = true;
+			if(Integer.parseInt(args[0]) == 2) ai = false;
+		}
 		setupGame();
 		startGame();
 	}
@@ -60,8 +68,8 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 	}
 	//instantiates movable parts and timer
 	public static void setupGame(){
-		p1 = new Player(1, gui);
-		p2 = new Player(2, gui);
+		p1 = new Player(1, gui,false);
+		p2 = new Player(2, gui, ai);
 		ball = new Ball(gui);
 		t = new Timer(50, game);
 
@@ -75,9 +83,35 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 	}
 	//called per timestep
 	public void actionPerformed(ActionEvent e) {
+		int colourPick;
+		if(drugsMode && !gameOver){
+			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+			ball.colour = gui.rainbow[colourPick];
+			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+			p1.colour = gui.rainbow[colourPick];
+			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+			p2.colour = gui.rainbow[colourPick];
+			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+			gui.setBackground(gui.rainbow[colourPick]);
+			gui.background = gui.rainbow[colourPick];
+			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+			gui.foreground = gui.rainbow[colourPick];
+		}
+		if(p1.matchPoint) {
+			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+			p1.colour = gui.rainbow[colourPick];
+			if(drugsMode) p1.colour = Color.BLACK;
+		}
+		if(p2.matchPoint) {
+			colourPick = ThreadLocalRandom.current().nextInt(0, gui.rainbow.length);
+			p2.colour = gui.rainbow[colourPick];
+			if(drugsMode) p2.colour = Color.BLACK;
+		}
+
+
 		if(!pause) {
 			ball.moveBall();
-			p2.ai(ball); //pause stops listening to p1 inputs
+			if (ai) p2.ai(ball); //pause stops listening to p1 inputs
 		}
 		//check if hit player
 		checkBallPlayer();
@@ -168,8 +202,14 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 
 	public void endPoint(int winner){
 		//points to the winner
-		if(winner == 1) p1.points ++;
-		else if (winner == 2) p2.points++;
+		if(winner == 1) {
+			p1.points++;
+			if (p1.points >= scoreToWin -1) p1.matchPoint = true;
+		}
+		else if (winner == 2) {
+			p2.points++;
+			if (p2.points >= scoreToWin -1) p2.matchPoint = true;
+		}
 		else print("who won that point?!");
 		//Officially mark the score
 		print("Point scored by player " + winner +". " + p1.points +"-" + p2.points);
@@ -216,16 +256,21 @@ class Player {
 	//position variables
 	int xPos; 			//used for collision detection with ball
 	int yPos;			//y co-ord of the player centre
-
+	//movement variables
+	int dy; 			//effectively the sensitivity
+	//AI
+	boolean amAI;
 	int radius; 		//player radius for 'ai'
 	boolean targetAcquired = false;
 	int netX;
-	//movement variables
-	int dy; 			//effectively the sensitivity
+
+	Color colour;
+	boolean matchPoint;
 	static int northBound, southBound, centre; //static as same for all players
 
-	public Player(int pNum, pongGUI gui){
+	public Player(int pNum, pongGUI gui, boolean ai){
 		this.playerNumber = pNum;
+		this.amAI = ai;
 		this.points = 0;
 		
 		//gui info necessary for player movement restriction/reset
@@ -237,6 +282,9 @@ class Player {
 		//ai
 		this.radius = gui.playerRadius;
 		this.netX = gui.windowXCentre;
+
+		this.colour = gui.foreground;
+
 		//assign player depth calculated by gui
 		if(pNum == 1) this.xPos = gui.p1x;
 		else if (pNum == 2) this.xPos = gui.p2x;
@@ -248,14 +296,14 @@ class Player {
 	public void moveUp(){
 		if (yPos > northBound) {
 			if(yPos-dy < northBound) yPos = northBound;
-			else yPos -= (playerNumber == 1) ? dy : dy/2;
+			else yPos -= (amAI == false) ? dy : dy/2;
 		}
 	}
 
 	public void moveDown(){
 		if (yPos < southBound) {
 			if(yPos + dy > southBound) yPos = southBound;
-			else yPos += (playerNumber == 1) ? dy : dy/2;
+			else yPos += (amAI == false) ? dy : dy/2;
 		}
 	}
 	public void ai(Ball ball){
@@ -292,6 +340,7 @@ class Ball {
 	static int resetX, resetY;
 	static int yUnit, xUnit;
 
+	Color colour;
 	public Ball(pongGUI gui){
 		//fixed bounds based on gui - which paints from top left of ball
 		this.northWall = 0; 
@@ -302,6 +351,8 @@ class Ball {
 		//granularity of ball movement
 		this.xUnit = gui.widthUnit;
 		this.yUnit = gui.heightUnit;
+
+		this.colour = gui.foreground;
 
 		//place the ball
 		resetBall();
@@ -330,7 +381,6 @@ class Ball {
 			yPos = southWall;
 			dy *= -1;
 		}
-
 	}
 
 	//set the ball in motion

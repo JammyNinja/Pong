@@ -35,7 +35,8 @@ public class pongGUI extends JPanel
 	Font guiFont = new Font("Monospaced", Font.PLAIN, 25);
 	Color background = Color.BLACK;
 	Color foreground = Color.WHITE;
-
+	Color ballColour = foreground;
+	Color[] rainbow = {Color.RED,Color.ORANGE,Color.YELLOW, Color.GREEN, Color.BLUE, Color.MAGENTA};
 	public pongGUI(pong game) {
 		pong.print("constructing gui...");
 
@@ -153,24 +154,27 @@ public class pongGUI extends JPanel
 	}
 	//paints ball from its top left
 	public void paintBall(Graphics g) {
-		
+		g.setColor(game.ball.colour);
 		g.fillRect(game.ball.xPos, game.ball.yPos, ballDiameter, ballDiameter); //x,y,width,height 
 	}
 	//paints players from their vertical centre, left
 	public void paintPlayers(Graphics g){
 		//player 1
+		g.setColor(game.p1.colour);
 		g.fillRect(game.p1.xPos, game.p1.yPos - playerRadius, playerWidth, playerHeight);
 		//player 2
+		g.setColor(game.p2.colour);
 		g.fillRect(game.p2.xPos, game.p2.yPos - playerRadius, playerWidth, playerHeight);
 	}
 	//needs aligning, prolly with a component or sth
 	public void paintScore(Graphics g){
+		g.setColor(foreground);
 		int fontSize = 25;
 		int scoreGap = 10;
-		g.drawString("" + game.p1.points, windowXCentre - fontSize, 50);
-		g.drawString(""+ game.p2.points, windowXCentre + scoreGap, 50);
-
-		if(game.pause) g.drawString("PAUSED!", windowXCentre - fontSize, northLimit);
+		g.drawString("" + game.p1.points, windowXCentre - fontSize, northLimit);
+		g.drawString(""+ game.p2.points, windowXCentre + scoreGap, northLimit);
+		if(game.drugsMode) g.drawString("DRUGS.", windowXCentre - 37, 69);
+		if(game.pause) g.drawString("PAUSED!", windowXCentre - fontSize, 50);
 	}
 	//unused - mayeb this could sort the holding?!!?
 	public void keyReleased(KeyEvent e){}

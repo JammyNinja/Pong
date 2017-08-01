@@ -3,8 +3,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class pong implements ActionListener{
 	/* TODO
-current: 	
-
+current:	p2 AI - doable i reckon in a greedy zombie player way
+	sub: make ai game playabke. nicely, p1 arrows etc
 		TIMING
 		serve again with space - or by moving I see
 		stop game freezing when holding keys, yet make keys holdable / adjust sensitivity
@@ -20,11 +20,12 @@ current:
 		player point score function?
 		some issue with the ball collision detection , sometimes doesnt register something that looks liek a hit, maybe should do something about player width?
 		^demonstratable from start move player 1 down 3, player 2 down 2 or 3
+		maybe dont gridify so hard?
+
 		TIDYING
 		- sort the statics
 
 		FUTURE FEATURES
-		p2 AI - doable i reckon in a greedy zombie player way
 		playable on a webpage
 	*/
 
@@ -41,6 +42,7 @@ current:
 		System.out.println("Pong, by Louis. Enjoy!");
 		game = new pong();
 		gui = new pongGUI(game);
+
 
 		setupGame();
 		startGame();
@@ -71,7 +73,7 @@ current:
 	//called per timestep
 	public void actionPerformed(ActionEvent e) {
 		if(!pause) ball.moveBall();
-		
+		p2.ai(ball);
 		//check if hit player
 		checkBallPlayer();
 		//is point over
@@ -210,6 +212,8 @@ class Player {
 	int xPos; 			//used for collision detection with ball
 	int yPos;			//y co-ord of the player centre
 
+	int radius; 		//player radius for 'ai'
+	int netX;
 	//movement variables
 	int dy; 			//effectively the sensitivity
 	static int northBound, southBound, centre; //static as same for all players
@@ -224,7 +228,9 @@ class Player {
 		this.centre = gui.windowYCentre;
 		this.dy = gui.heightUnit;
 		this.yPos = centre;
-
+		//ai
+		this.radius = gui.playerRadius;
+		this.netX = gui.windowXCentre;
 		//assign player depth calculated by gui
 		if(pNum == 1) this.xPos = gui.p1x;
 		else if (pNum == 2) this.xPos = gui.p2x;
@@ -236,14 +242,20 @@ class Player {
 	public void moveUp(){
 		if (yPos > northBound) {
 			if(yPos-dy < northBound) yPos = northBound;
-			else yPos-= dy;
+			else yPos -= (playerNumber == 1) ? dy : dy/2;
 		}
 	}
 
 	public void moveDown(){
 		if (yPos < southBound) {
 			if(yPos + dy > southBound) yPos = southBound;
-			else yPos += dy;
+			else yPos += (playerNumber == 1) ? dy : dy/2;
+		}
+	}
+	public void ai(Ball ball){
+		if(ball.xPos > netX && ball.dx > 0) {
+			if(yPos < ball.yPos) moveDown();
+			if(yPos > ball.yPos) moveUp();
 		}
 	}
 

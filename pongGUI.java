@@ -90,19 +90,19 @@ public class pongGUI extends JPanel
 	public void keyPressed(KeyEvent e){
 		switch(e.getKeyCode()){
 			case KeyEvent.VK_W:
-				if(!game.pause) game.p1.moveUp();
-			break;
-
-			case KeyEvent.VK_S:
-				if(!game.pause) game.p1.moveDown();
-			break;
-
-			case KeyEvent.VK_UP:
 				if(!game.pause) game.p2.moveUp();
 			break;
 
-			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_S:
 				if(!game.pause) game.p2.moveDown();
+			break;
+
+			case KeyEvent.VK_UP:
+				if(!game.pause) game.p1.moveUp();
+			break;
+
+			case KeyEvent.VK_DOWN:
+				if(!game.pause) game.p1.moveDown();
 			break;
 
 			case KeyEvent.VK_ESCAPE:
@@ -171,7 +171,7 @@ public class pongGUI extends JPanel
 
 		if(game.pause) g.drawString("PAUSED!", windowXCentre - fontSize, northLimit);
 	}
-	//unused
+	//unused - mayeb this could sort the holding?!!?
 	public void keyReleased(KeyEvent e){}
 	public void keyTyped(KeyEvent e){}
 }

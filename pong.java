@@ -103,14 +103,14 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 					//yes it hit, but where:
 
 					//top sixth
-					if(ball.yPos + gui.ballDiameter <= p1.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
+					if(ball.yPos + gui.ballRadius <= p1.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
 					//2nd from top sixth
-					else if(ball.yPos + gui.ballDiameter <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					else if(ball.yPos + gui.ballRadius <= p1.yPos - gui.playerSixth) ball.hitPlayer(-1);
 					
 					//bottom sixth
-					else if(ball.yPos >= p1.yPos + 2*gui.playerSixth) ball.hitPlayer(2);
+					else if(ball.yPos + gui.ballRadius >= p1.yPos + 2*gui.playerSixth) ball.hitPlayer(2);
 					//2nd from bottom sixth
-					else if(ball.yPos >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
+					else if(ball.yPos + gui.ballRadius >= p1.yPos + gui.playerSixth) ball.hitPlayer(1);
 					//centre third
 					else ball.hitPlayer(0);
 				}
@@ -127,14 +127,14 @@ current:	p2 AI - doable i reckon in a greedy zombie player way
 					//yes it hit, but where:
 					p2.targetAcquired = false; //it hit the target, no longer acquired
 					//top sixth
-					if(ball.yPos + gui.ballDiameter <= p2.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
+					if(ball.yPos + gui.ballRadius <= p2.yPos - 2*gui.playerSixth) ball.hitPlayer(-2);
 					//bottom sixth
-					else if(ball.yPos >= p2.yPos + 2*gui.playerSixth) ball.hitPlayer(2);
+					else if(ball.yPos + gui.ballRadius >= p2.yPos + 2*gui.playerSixth) ball.hitPlayer(2);
 					
 					//2nd from top sixth
-					else if(ball.yPos + gui.ballDiameter <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
+					else if(ball.yPos + gui.ballRadius <= p2.yPos - gui.playerSixth) ball.hitPlayer(-1);
 					//2nd from bottom sixth
-					else if (ball.yPos >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
+					else if(ball.yPos + gui.ballRadius >= p2.yPos + gui.playerSixth) ball.hitPlayer(1);
 					//centre third
 					else ball.hitPlayer(0);
 				}
